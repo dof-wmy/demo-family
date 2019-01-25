@@ -35,11 +35,11 @@ export async function addRule(params) {
   });
 }
 
-export async function updateRule(params) {
-  return request('/api/rule', {
+export async function updateRule(params = {}) {
+  return request(`/api/rule?${stringify(params.query)}`, {
     method: 'POST',
     body: {
-      ...params,
+      ...params.body,
       method: 'update',
     },
   });
@@ -119,8 +119,8 @@ export async function fakeRegister(params) {
   });
 }
 
-export async function queryNotices() {
-  return request('/api/notices');
+export async function queryNotices(params = {}) {
+  return request(`/api/notices?${stringify(params)}`);
 }
 
 export async function getFakeCaptcha(mobile) {
