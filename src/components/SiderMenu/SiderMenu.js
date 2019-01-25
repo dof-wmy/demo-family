@@ -6,6 +6,8 @@ import styles from './index.less';
 import PageLoading from '../PageLoading';
 import { getDefaultCollapsedSubMenus } from './SiderMenuUtils';
 
+import defaultSettings from '../../defaultSettings';
+
 const BaseMenu = React.lazy(() => import('./BaseMenu'));
 const { Sider } = Layout;
 
@@ -68,7 +70,7 @@ export default class SiderMenu extends PureComponent {
         <div className={styles.logo} id="logo">
           <Link to="/">
             <img src={logo} alt="logo" />
-            <h1>Ant Design Pro</h1>
+            <h1>{defaultSettings.appName}</h1>
           </Link>
         </div>
         <Suspense fallback={<PageLoading />}>

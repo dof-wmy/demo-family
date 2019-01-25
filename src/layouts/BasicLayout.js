@@ -18,6 +18,8 @@ import Exception403 from '../pages/Exception/403';
 import PageLoading from '@/components/PageLoading';
 import SiderMenu from '@/components/SiderMenu';
 
+import defaultSettings from '../defaultSettings';
+
 import styles from './BasicLayout.less';
 
 // lazy load SettingDrawer
@@ -116,14 +118,14 @@ class BasicLayout extends React.PureComponent {
     const currRouterData = this.matchParamsPath(pathname, breadcrumbNameMap);
 
     if (!currRouterData) {
-      return 'Ant Design Pro';
+      return defaultSettings.appName;
     }
     const pageName = formatMessage({
       id: currRouterData.locale || currRouterData.name,
       defaultMessage: currRouterData.name,
     });
 
-    return `${pageName} - Ant Design Pro`;
+    return `${pageName} - ${defaultSettings.appName}`;
   };
 
   getLayoutStyle = () => {

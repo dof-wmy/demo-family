@@ -5,6 +5,8 @@ import webpackPlugin from './plugin.config';
 import defaultSettings from '../src/defaultSettings';
 import slash from 'slash2';
 
+require('dotenv').config()
+
 const plugins = [
   [
     'umi-plugin-react',
@@ -57,6 +59,7 @@ export default {
   plugins,
   define: {
     APP_TYPE: process.env.APP_TYPE || '',
+    API_ROOT: process.env.API_ROOT || '',
   },
   targets: {
     ie: 11,

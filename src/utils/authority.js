@@ -20,3 +20,11 @@ export function setAuthority(authority) {
   const proAuthority = typeof authority === 'string' ? [authority] : authority;
   return localStorage.setItem('antd-pro-authority', JSON.stringify(proAuthority));
 }
+
+export function getAccessToken(){
+  return localStorage.getItem('access-token');
+}
+
+export function setAccessToken(accessToken) {
+  return localStorage.setItem('access-token', accessToken || '');
+}

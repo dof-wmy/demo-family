@@ -3,6 +3,7 @@ import { notification } from 'antd';
 import router from 'umi/router';
 import hash from 'hash.js';
 import { isAntdPro } from './utils';
+import { getAccessToken } from '@/utils/authority';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -27,7 +28,7 @@ const checkStatus = response => {
     return response;
   }
   const errortext = codeMessage[response.status] || response.statusText;
-  notification.error({
+  console.log('request', {
     message: `请求错误 ${response.status}: ${response.url}`,
     description: errortext,
   });
@@ -87,22 +88,18 @@ export default function request(url, option) {
     newOptions.method === 'PUT' ||
     newOptions.method === 'DELETE'
   ) {
+    newOptions.headers = {
+      Accept: 'application/json',
+      ...newOptions.headers,
+    };
     if (!(newOptions.body instanceof FormData)) {
-      newOptions.headers = {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
-        ...newOptions.headers,
-      };
+      newOptions.headers['Content-Type'] = 'application/json; charset=utf-8';
       newOptions.body = JSON.stringify(newOptions.body);
-    } else {
-      // newOptions.body is FormData
-      newOptions.headers = {
-        Accept: 'application/json',
-        ...newOptions.headers,
-      };
     }
+    const accessToken = getAccessToken();
+    newOptions.headers.Authorization = `Bearer ${accessToken}`;
   }
-
+  // newOptions.headers['X-Requested-With'] = 'XMLHttpRequest';
   const expirys = options.expirys && 60;
   // options.expirys !== false, return the cache,
   if (options.expirys !== false) {
@@ -132,12 +129,14 @@ export default function request(url, option) {
     .catch(e => {
       const status = e.name;
       if (status === 401) {
-        // @HACK
-        /* eslint-disable no-underscore-dangle */
-        window.g_app._store.dispatch({
-          type: 'login/logout',
-        });
-        return;
+        if(window.location.pathname !== '/user/login'){
+          // @HACK
+          /* eslint-disable no-underscore-dangle */
+          window.g_app._store.dispatch({
+            type: 'login/logout',
+          });
+          return;
+        }
       }
       // environment should not be used
       if (status === 403) {
@@ -145,6 +144,10 @@ export default function request(url, option) {
         return;
       }
       if (status <= 504 && status >= 500) {
+        notification.error({
+          message: `网络错误`,
+          description: '请稍后再试',
+        });
         router.push('/exception/500');
         return;
       }

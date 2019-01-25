@@ -2,6 +2,8 @@ import React, { Fragment } from 'react';
 import { Layout, Icon } from 'antd';
 import GlobalFooter from '@/components/GlobalFooter';
 
+import defaultSettings from '../defaultSettings'
+
 const { Footer } = Layout;
 const FooterView = () => (
   <Footer style={{ padding: 0 }}>
@@ -28,7 +30,7 @@ const FooterView = () => (
       ]}
       copyright={
         <Fragment>
-          Copyright <Icon type="copyright" /> 2018 蚂蚁金服体验技术部出品
+          Copyright <Icon type="copyright" /> {defaultSettings.copyright}
         </Fragment>
       }
     />

@@ -11,6 +11,7 @@ module.exports = {
   },
   globals: {
     APP_TYPE: true,
+    API_ROOT: true,
     page: true,
   },
   rules: {
