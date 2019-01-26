@@ -83,6 +83,7 @@ export default function request(url, option) {
     credentials: 'include',
   };
   const newOptions = { ...defaultOptions, ...options };
+  newOptions.headers = {};
   if (
     newOptions.method === 'POST' ||
     newOptions.method === 'PUT' ||
@@ -96,9 +97,9 @@ export default function request(url, option) {
       newOptions.headers['Content-Type'] = 'application/json; charset=utf-8';
       newOptions.body = JSON.stringify(newOptions.body);
     }
-    const accessToken = getAccessToken();
-    newOptions.headers.Authorization = `Bearer ${accessToken}`;
   }
+  const accessToken = getAccessToken();
+  newOptions.headers.Authorization = `Bearer ${accessToken}`;
   // newOptions.headers['X-Requested-With'] = 'XMLHttpRequest';
   const expirys = options.expirys && 60;
   // options.expirys !== false, return the cache,
@@ -129,7 +130,7 @@ export default function request(url, option) {
     .catch(e => {
       const status = e.name;
       if (status === 401) {
-        if(window.location.pathname !== '/user/login'){
+        if (window.location.pathname !== '/user/login') {
           // @HACK
           /* eslint-disable no-underscore-dangle */
           window.g_app._store.dispatch({
