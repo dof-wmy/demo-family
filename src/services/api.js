@@ -1,8 +1,6 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
 
-const apiRoot = API_ROOT;
-
 export async function queryProjectNotice() {
   return request('/api/project/notice');
 }
@@ -128,7 +126,7 @@ export async function getFakeCaptcha(mobile) {
 }
 
 export async function apiLogin(params) {
-  return request(`${apiRoot}/auth/login`, {
+  return request(`${API_ROOT}/auth/login`, {
     method: 'POST',
     body: params,
   });
