@@ -136,24 +136,24 @@ export default function request(url, option) {
           window.g_app._store.dispatch({
             type: 'login/logout',
           });
-          return;
         }
+      } else {
+        // environment should not be used
+        // if (status === 403) {
+        //   router.push('/exception/403');
+        //   return;
+        // }
+        // if (status <= 504 && status >= 500) {
+        //   router.push('/exception/500');
+        //   return;
+        // }
+        // if (status >= 404 && status < 422) {
+        //   router.push('/exception/404');
+        // }
+        notification.error({
+          message: `网络错误`,
+          description: '请稍后再试',
+        });
       }
-      // environment should not be used
-      // if (status === 403) {
-      //   router.push('/exception/403');
-      //   return;
-      // }
-      // if (status <= 504 && status >= 500) {
-      //   router.push('/exception/500');
-      //   return;
-      // }
-      // if (status >= 404 && status < 422) {
-      //   router.push('/exception/404');
-      // }
-      notification.error({
-        message: `网络错误`,
-        description: '请稍后再试',
-      });
     });
 }
