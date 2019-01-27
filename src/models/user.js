@@ -1,4 +1,6 @@
-import { query as queryUsers, queryCurrent } from '@/services/user';
+import { query as queryUsers, me } from '@/services/user';
+
+import defaultSettings from '@/defaultSettings';
 
 export default {
   namespace: 'user',
@@ -17,7 +19,7 @@ export default {
       });
     },
     *fetchCurrent(_, { call, put }) {
-      const response = yield call(queryCurrent);
+      const response = yield call(me);
       yield put({
         type: 'saveCurrentUser',
         payload: response,
@@ -33,9 +35,15 @@ export default {
       };
     },
     saveCurrentUser(state, action) {
+      const currentUser = Object.assign(
+        {
+          avatar: defaultSettings.user.avatar,
+        },
+        action.payload || {}
+      );
       return {
         ...state,
-        currentUser: action.payload || {},
+        currentUser,
       };
     },
     changeNotifyCount(state, action) {

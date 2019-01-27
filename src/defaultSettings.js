@@ -38,4 +38,8 @@ module.exports = {
     disableLocal: false,
   },
   title: '后台管理系统',
+  user: {
+    avatar: '',
+    // avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
+  },
 };

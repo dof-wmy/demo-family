@@ -18,11 +18,12 @@ export default [
     authority: ['admin', 'user'],
     routes: [
       // dashboard
-      { path: '/', redirect: '/dashboard/analysis' },
+      { path: '/', redirect: '/index' },
       {
         path: '/dashboard',
         name: 'dashboard',
         icon: 'dashboard',
+        hideInMenu: true,
         routes: [
           {
             path: '/dashboard/analysis',
@@ -46,6 +47,7 @@ export default [
         path: '/form',
         icon: 'form',
         name: 'form',
+        hideInMenu: true,
         routes: [
           {
             path: '/form/basic-form',
@@ -92,6 +94,7 @@ export default [
         path: '/list',
         icon: 'table',
         name: 'list',
+        hideInMenu: true,
         routes: [
           {
             path: '/list/table-list',
@@ -140,6 +143,7 @@ export default [
         path: '/profile',
         name: 'profile',
         icon: 'profile',
+        hideInMenu: true,
         routes: [
           // profile
           {
@@ -159,6 +163,7 @@ export default [
         name: 'result',
         icon: 'check-circle-o',
         path: '/result',
+        hideInMenu: true,
         routes: [
           // result
           {
@@ -173,6 +178,7 @@ export default [
         name: 'exception',
         icon: 'warning',
         path: '/exception',
+        hideInMenu: true,
         routes: [
           // exception
           {
@@ -202,6 +208,7 @@ export default [
         name: 'account',
         icon: 'user',
         path: '/account',
+        hideInMenu: true,
         routes: [
           {
             path: '/account/center',
@@ -255,8 +262,14 @@ export default [
           },
         ],
       },
+      // {
+      //   component: '404',
+      // },
       {
-        component: '404',
+        path: '/index',
+        name: 'home',
+        icon: 'dashboard',
+        component: './Index/Index',
       },
     ],
   },
