@@ -1,6 +1,6 @@
 import fetch from 'dva/fetch';
 import { notification } from 'antd';
-import router from 'umi/router';
+// import router from 'umi/router';
 import hash from 'hash.js';
 import { isAntdPro } from './utils';
 import { getAccessToken } from '@/utils/authority';
@@ -100,7 +100,7 @@ export default function request(url, option) {
   }
   const accessToken = getAccessToken();
   newOptions.headers.Authorization = `Bearer ${accessToken}`;
-  // newOptions.headers['X-Requested-With'] = 'XMLHttpRequest';
+  newOptions.headers['X-Requested-With'] = 'XMLHttpRequest';
   const expirys = options.expirys && 60;
   // options.expirys !== false, return the cache,
   if (options.expirys !== false) {
@@ -140,20 +140,20 @@ export default function request(url, option) {
         }
       }
       // environment should not be used
-      if (status === 403) {
-        router.push('/exception/403');
-        return;
-      }
-      if (status <= 504 && status >= 500) {
-        notification.error({
-          message: `网络错误`,
-          description: '请稍后再试',
-        });
-        router.push('/exception/500');
-        return;
-      }
-      if (status >= 404 && status < 422) {
-        router.push('/exception/404');
-      }
+      // if (status === 403) {
+      //   router.push('/exception/403');
+      //   return;
+      // }
+      // if (status <= 504 && status >= 500) {
+      //   router.push('/exception/500');
+      //   return;
+      // }
+      // if (status >= 404 && status < 422) {
+      //   router.push('/exception/404');
+      // }
+      notification.error({
+        message: `网络错误`,
+        description: '请稍后再试',
+      });
     });
 }
