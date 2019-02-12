@@ -1,5 +1,5 @@
 import fetch from 'dva/fetch';
-import { notification } from 'antd';
+import { notification, message } from 'antd';
 // import router from 'umi/router';
 import hash from 'hash.js';
 import { isAntdPro } from './utils';
@@ -25,12 +25,24 @@ const codeMessage = {
 
 const checkStatus = response => {
   if (response.status >= 200 && response.status < 300) {
+    response
+      .clone()
+      .json()
+      .then(data => {
+        if (data.error_message) {
+          message.error(data.error_message);
+        }
+        if (data.success_message) {
+          message.success(data.success_message);
+        }
+      });
     return response;
   }
   const errortext = codeMessage[response.status] || response.statusText;
   console.log('request', {
     message: `请求错误 ${response.status}: ${response.url}`,
     description: errortext,
+    response,
   });
   const error = new Error(errortext);
   error.name = response.status;
@@ -128,6 +140,7 @@ export default function request(url, option) {
       return response.json();
     })
     .catch(e => {
+      // environment should not be used
       const status = e.name;
       if (status === 401) {
         if (window.location.pathname !== '/user/login') {
@@ -137,23 +150,33 @@ export default function request(url, option) {
             type: 'login/logout',
           });
         }
-      } else {
-        // environment should not be used
-        // if (status === 403) {
-        //   router.push('/exception/403');
-        //   return;
-        // }
-        // if (status <= 504 && status >= 500) {
-        //   router.push('/exception/500');
-        //   return;
-        // }
-        // if (status >= 404 && status < 422) {
-        //   router.push('/exception/404');
-        // }
-        notification.error({
-          message: `网络错误`,
-          description: '请稍后再试',
-        });
+        return;
       }
+      if (status === 403) {
+        // router.push('/exception/403');
+        notification.error({
+          message: '无权限',
+          description: '请联系管理员授权',
+        });
+        return;
+      }
+      // if (status >= 404 && status < 422) {
+      //   router.push('/exception/404');
+      // return;
+      // }
+      if (status === 422) {
+        e.response.json().then(data => {
+          message.error(data.errors[Object.keys(data.errors)[0]][0]);
+        });
+        return;
+      }
+      // if (status <= 504 && status >= 500) {
+      //   router.push('/exception/500');
+      //   return;
+      // }
+      notification.error({
+        message: '网络错误',
+        description: '请稍后再试',
+      });
     });
 }

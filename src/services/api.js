@@ -131,3 +131,49 @@ export async function apiLogin(params) {
     body: params,
   });
 }
+
+export async function adminUsers(params) {
+  return request(`${API_ROOT}/users?${stringify(params)}`);
+}
+
+export async function adminUserSave(params) {
+  let apiUrl = `${API_ROOT}/users`;
+  if (params.id) {
+    apiUrl += `/${params.id}`;
+    // delete params.id;
+  }
+  return request(apiUrl, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function adminUsersDelete(params) {
+  return request(`${API_ROOT}/users`, {
+    method: 'DELETE',
+    body: params,
+  });
+}
+
+export async function adminGroups(params) {
+  return request(`${API_ROOT}/groups?${stringify(params)}`);
+}
+
+export async function adminGroupSave(params) {
+  let apiUrl = `${API_ROOT}/groups`;
+  if (params.id) {
+    apiUrl += `/${params.id}`;
+    // delete params.id;
+  }
+  return request(apiUrl, {
+    method: 'POST',
+    body: params,
+  });
+}
+
+export async function adminGroupsDelete(params) {
+  return request(`${API_ROOT}/groups`, {
+    method: 'DELETE',
+    body: params,
+  });
+}

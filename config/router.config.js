@@ -262,14 +262,33 @@ export default [
           },
         ],
       },
-      // {
-      //   component: '404',
-      // },
       {
         path: '/index',
         name: 'home',
         icon: 'dashboard',
         component: './Index/Index',
+      },
+      {
+        path: '/admin',
+        name: 'admin',
+        icon: 'tool',
+        routes: [
+          {
+            path: '/admin/user',
+            name: 'user',
+            icon: 'user',
+            component: './Admin/User/Users',
+          },
+          {
+            path: '/admin/group',
+            name: 'group',
+            icon: 'team',
+            component: './Admin/User/Groups',
+          },
+        ],
+      },
+      {
+        component: '404',
       },
     ],
   },

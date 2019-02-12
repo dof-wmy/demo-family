@@ -20,18 +20,13 @@ class Index extends Component {
     return (
       <Card title="基本信息">
         <Row>
-          <Col span="2">
-            <Avatar
-              size="large"
-              // icon="user"
-              src={currentUser.avatar}
-              alt={currentUser.username}
-            >
+          <Col span={2}>
+            <Avatar size="large" icon="user" src={currentUser.avatar} alt={currentUser.username}>
               {currentUser.name}
             </Avatar>
           </Col>
-          <Col span="2">{currentUser.name}</Col>
-          <Col span="2">{currentUser.username}</Col>
+          <Col span={22}>{currentUser.username}</Col>
+          <Col span={22}>{currentUser.name}</Col>
         </Row>
       </Card>
     );
