@@ -1,4 +1,4 @@
-import { query as queryUsers, me } from '@/services/user';
+import { query as queryUsers, me, updateMe } from '@/services/user';
 
 import defaultSettings from '@/defaultSettings';
 
@@ -24,6 +24,10 @@ export default {
         type: 'saveCurrentUser',
         payload: response,
       });
+    },
+    *updateMe({ payload, callback }, { call }) {
+      const response = yield call(updateMe, payload);
+      if (callback) callback(response);
     },
   },
 

@@ -68,6 +68,10 @@ class HeaderView extends Component {
       router.push('/account/settings/base');
       return;
     }
+    if (key === 'meSetting') {
+      router.push('/me/setting');
+      return;
+    }
     if (key === 'logout') {
       dispatch({
         type: 'login/logout',

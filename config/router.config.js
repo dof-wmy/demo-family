@@ -275,6 +275,25 @@ export default [
         component: './Index/Index',
       },
       {
+        path: '/me/setting',
+        hideInMenu: true,
+        component: './Me/Setting/Setting',
+        routes: [
+          {
+            path: '/me/setting',
+            redirect: '/me/setting/base',
+          },
+          {
+            path: '/me/setting/base',
+            component: './Me/Setting/BaseView',
+          },
+          {
+            path: '/me/setting/password',
+            component: './Me/Setting/PasswordView',
+          },
+        ],
+      },
+      {
         path: '/admin',
         name: 'admin',
         icon: 'tool',

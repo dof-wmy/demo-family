@@ -11,3 +11,10 @@ export async function queryCurrent() {
 export async function me() {
   return request(`${API_ROOT}/auth/me`);
 }
+
+export async function updateMe(params) {
+  return request(`${API_ROOT}/auth/me`, {
+    method: 'POST',
+    body: params,
+  });
+}

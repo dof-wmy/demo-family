@@ -112,7 +112,7 @@ const UserForm = Form.create()(props => {
       {showPassword && (
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="确认密码">
           {form.getFieldDecorator('password_confirmation', {
-            rules: [{ required: true, pattern: /[\S]{6,}/, message: '密码至少六位', min: 6 }],
+            rules: [{ required: true, pattern: /[\S]{6,}/, message: '密码至少六位' }],
           })(<Input type="password" onKeyDown={onKeyDown} placeholder="请再次输入密码" />)}
         </FormItem>
       )}
