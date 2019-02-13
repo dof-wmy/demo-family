@@ -15,7 +15,7 @@ export default [
     path: '/',
     component: '../layouts/BasicLayout',
     Routes: ['src/pages/Authorized'],
-    authority: ['admin', 'user'],
+    authority: ['administrator', 'admin', 'user'],
     routes: [
       // dashboard
       { path: '/', redirect: '/index' },
@@ -276,7 +276,6 @@ export default [
       },
       {
         path: '/me/setting',
-        hideInMenu: true,
         component: './Me/Setting/Setting',
         routes: [
           {
@@ -297,6 +296,7 @@ export default [
         path: '/admin',
         name: 'admin',
         icon: 'tool',
+        authority: ['administrator'],
         routes: [
           {
             path: '/admin/user',

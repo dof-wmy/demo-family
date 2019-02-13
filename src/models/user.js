@@ -1,4 +1,5 @@
 import { query as queryUsers, me, updateMe } from '@/services/user';
+import { setAuthority } from '@/utils/authority';
 
 import defaultSettings from '@/defaultSettings';
 
@@ -24,6 +25,10 @@ export default {
         type: 'saveCurrentUser',
         payload: response,
       });
+
+      const authority = response.groups;
+      authority.push('admin');
+      setAuthority(authority);
     },
     *updateMe({ payload, callback }, { call }) {
       const response = yield call(updateMe, payload);

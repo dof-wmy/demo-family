@@ -13,24 +13,30 @@ export default {
   },
 
   effects: {
-    *login({ payload }, { call, put }) {
+    *login({ payload }, { call, put, take }) {
       const response = yield call(apiLogin, payload);
-      const type = 'account'
+      const type = 'account';
       yield put({
         type: 'changeLoginStatus',
-        payload: response ? {
-          status: 'ok',
-          type,
-          currentAuthority: 'admin',
-          accessToken: response.access_token
-        } : {
-          status: 'error',
-          type,
-          currentAuthority: 'guest',
-        },
+        payload: response
+          ? {
+              status: 'ok',
+              type,
+              currentAuthority: 'admin',
+              accessToken: response.access_token,
+            }
+          : {
+              status: 'error',
+              type,
+              currentAuthority: 'guest',
+            },
       });
       // Login successfully
-      if(response){
+      if (response) {
+        yield put({
+          type: 'user/fetchCurrent',
+        });
+        yield take('user/fetchCurrent/@@end');
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
