@@ -413,7 +413,11 @@ class Groups extends PureComponent {
           <div className={TableListStyles.tableList}>
             <div className={TableListStyles.tableListForm}>{this.renderForm()}</div>
             <div className={TableListStyles.tableListOperator}>
-              <Button icon="user-add" type="primary" onClick={() => this.handleModalVisible(true)}>
+              <Button
+                icon="usergroup-add"
+                type="primary"
+                onClick={() => this.handleModalVisible(true)}
+              >
                 新增
               </Button>
               {selectedRows.length > 0 && (
