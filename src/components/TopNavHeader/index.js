@@ -4,8 +4,7 @@ import RightContent from '../GlobalHeader/RightContent';
 import BaseMenu from '../SiderMenu/BaseMenu';
 import { getFlatMenuKeys } from '../SiderMenu/SiderMenuUtils';
 import styles from './index.less';
-
-import defaultSettings from '../../defaultSettings';
+import { appName, title } from '../../defaultSettings';
 
 export default class TopNavHeader extends PureComponent {
   state = {
@@ -34,7 +33,7 @@ export default class TopNavHeader extends PureComponent {
             <div className={styles.logo} key="logo" id="logo">
               <Link to="/">
                 <img src={logo} alt="logo" />
-                <h1>{defaultSettings.appName}</h1>
+                <h1>{title || appName}</h1>
               </Link>
             </div>
             <div

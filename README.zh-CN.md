@@ -6,6 +6,7 @@
 
 开箱即用的中台前端/设计解决方案。
 
+[![Build With Umi](https://img.shields.io/badge/build%20with-umi-028fe4.svg?style=flat-square)](http://umijs.org/)
 [![Build Status](https://dev.azure.com/ant-design/ant-design-pro/_apis/build/status/ant-design.ant-design-pro?branchName=master)](https://dev.azure.com/ant-design/ant-design-pro/_build/latest?definitionId=1?branchName=master)
 [![Dependencies](https://img.shields.io/david/ant-design/ant-design-pro.svg)](https://david-dm.org/ant-design/ant-design-pro)
 [![DevDependencies](https://img.shields.io/david/dev/ant-design/ant-design-pro.svg)](https://david-dm.org/ant-design/ant-design-pro?type=dev)
@@ -83,8 +84,8 @@ $ npm start         # 访问 http://localhost:8000
 
 ```bash
 # preview 
-$ docker pull chenshuai2144/ant-design-pro
-$ docker run -p 80:80 chenshuai2144/ant-design-pro
+$ docker pull antdesign/ant-design-pro
+$ docker run -p 80:80 antdesign/ant-design-pro
 # open http://localhost
 
 # dev 

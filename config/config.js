@@ -8,6 +8,7 @@ import slash from 'slash2';
 require('dotenv').config();
 
 const { pwa, primaryColor } = defaultSettings;
+const { NODE_ENV, APP_TYPE, API_ROOT, TEST } = process.env;
 
 const plugins = [
   [
@@ -25,6 +26,7 @@ const plugins = [
       dynamicImport: {
         loadingComponent: './components/PageLoading/index',
         webpackChunkName: true,
+        level: 3,
       },
       pwa: pwa
         ? {
@@ -34,7 +36,7 @@ const plugins = [
             },
           }
         : {},
-      ...(!process.env.TEST && os.platform() === 'darwin'
+      ...(!TEST && os.platform() === 'darwin'
         ? {
             dll: {
               include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch'],
@@ -51,6 +53,7 @@ const plugins = [
 // 业务上不需要这个
 const googleAnalyticsCode = '';
 if (googleAnalyticsCode !== '') {
+  // if (APP_TYPE === 'site') {
   plugins.push([
     'umi-plugin-ga',
     {
@@ -63,8 +66,8 @@ export default {
   // add for transfer to umi
   plugins,
   define: {
-    APP_TYPE: process.env.APP_TYPE || '',
-    API_ROOT: process.env.API_ROOT || '',
+    APP_TYPE: APP_TYPE || '',
+    API_ROOT: API_ROOT || '',
   },
   treeShaking: true,
   targets: {
@@ -79,6 +82,7 @@ export default {
   },
   externals: {
     '@antv/data-set': 'DataSet',
+    bizcharts: 'BizCharts',
   },
   // proxy: {
   //   '/server/api/': {
