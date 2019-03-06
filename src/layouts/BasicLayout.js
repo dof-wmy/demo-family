@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import Pusher from 'pusher-js';
 import { Layout } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
@@ -60,6 +61,18 @@ class BasicLayout extends React.Component {
       type: 'menu/getMenuData',
       payload: { routes, authority },
     });
+
+    if (PUSHER_APP_KEY) {
+      Pusher.logToConsole = PUSHER_LOG_TO_CONSOLE;
+      const pusher = new Pusher(PUSHER_APP_KEY, {
+        cluster: PUSHER_APP_CLUSTER,
+        forceTLS: true,
+      });
+      const channel = pusher.subscribe('public-channel');
+      channel.bind('public-event', data => {
+        console.log(data);
+      });
+    }
   }
 
   getContext() {

@@ -8,7 +8,15 @@ import slash from 'slash2';
 require('dotenv').config();
 
 const { pwa, primaryColor } = defaultSettings;
-const { NODE_ENV, APP_TYPE, API_ROOT, TEST } = process.env;
+const {
+  NODE_ENV,
+  APP_TYPE,
+  API_ROOT,
+  PUSHER_APP_KEY,
+  PUSHER_APP_CLUSTER,
+  PUSHER_LOG_TO_CONSOLE,
+  TEST,
+} = process.env;
 
 const plugins = [
   [
@@ -68,6 +76,9 @@ export default {
   define: {
     APP_TYPE: APP_TYPE || '',
     API_ROOT: API_ROOT || '',
+    PUSHER_APP_KEY: PUSHER_APP_KEY || '',
+    PUSHER_APP_CLUSTER: PUSHER_APP_CLUSTER || 'ap3',
+    PUSHER_LOG_TO_CONSOLE: PUSHER_LOG_TO_CONSOLE || false,
   },
   treeShaking: true,
   targets: {

@@ -12,6 +12,9 @@ module.exports = {
   globals: {
     APP_TYPE: true,
     API_ROOT: true,
+    PUSHER_APP_KEY: true,
+    PUSHER_APP_CLUSTER: true,
+    PUSHER_LOG_TO_CONSOLE: true,
     page: true,
   },
   rules: {
