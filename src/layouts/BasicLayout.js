@@ -64,14 +64,14 @@ class BasicLayout extends React.Component {
 
     if (PUSHER_APP_KEY) {
       Pusher.logToConsole = PUSHER_LOG_TO_CONSOLE;
-      const pusher = new Pusher(PUSHER_APP_KEY, {
-        cluster: PUSHER_APP_CLUSTER,
-        forceTLS: true,
-      });
-      const channel = pusher.subscribe('public-channel');
-      channel.bind('public-event', data => {
-        console.log(data);
-      });
+      // const pusher = new Pusher(PUSHER_APP_KEY, {
+      //   cluster: PUSHER_APP_CLUSTER,
+      //   forceTLS: true,
+      // });
+      // const channel = pusher.subscribe('public-channel');
+      // channel.bind('public-event', data => {
+      //   console.log(data);
+      // });
     }
   }
 
