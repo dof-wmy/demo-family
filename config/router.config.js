@@ -300,19 +300,13 @@ export default [
         path: '/admin',
         name: 'admin',
         icon: 'tool',
-        authority: ['administrator'],
+        // authority: ['administrator'],
         routes: [
           {
             path: '/admin/user',
             name: 'user',
             icon: 'user',
             component: './Admin/User/Users',
-          },
-          {
-            path: '/admin/group',
-            name: 'group',
-            icon: 'team',
-            component: './Admin/User/Groups',
           },
         ],
       },

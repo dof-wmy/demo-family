@@ -18,12 +18,17 @@ import {
   Modal,
   Divider,
   Tag,
+  Tooltip,
+  Transfer,
+  Popover,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
 import TableListStyles from './TableList.less';
 // import { View } from '@antv/g2/src';
+
+const { Option } = Select;
 
 const { confirm } = Modal;
 const { RangePicker } = DatePicker;
@@ -43,8 +48,10 @@ const UserForm = Form.create()(props => {
     handleUserFormSubmit,
     handleModalVisible,
     resetPassword,
+    assignPermission,
     userData,
     groupOptions,
+    permissionOptions,
   } = props;
   const isAdd = !userData || !userData.id;
   const showPassword = resetPassword || !userData;
@@ -70,31 +77,36 @@ const UserForm = Form.create()(props => {
   if (resetPassword) {
     modalTitle = '重置密码';
   }
+  if (assignPermission) {
+    modalTitle = '权限分配';
+  }
   return (
     <Modal
       destroyOnClose
+      width={assignPermission || !userData ? 700 : 500}
       confirmLoading={confirmLoading}
       title={modalTitle}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      {!isAdd && (
-        <FormItem>
-          {form.getFieldDecorator('id', {
-            initialValue: userData ? userData.id : null,
-          })(<Input type="hidden" />)}
-        </FormItem>
-      )}
-      {!resetPassword && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="用户名">
-          {form.getFieldDecorator('username', {
+      {!isAdd &&
+        form.getFieldDecorator('id', {
+          initialValue: userData ? userData.id : null,
+        })(<Input type="hidden" />)}
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="用户名">
+        {resetPassword || assignPermission ? (
+          <Tooltip placement="right" title={userData.name}>
+            {userData.username}
+          </Tooltip>
+        ) : (
+          form.getFieldDecorator('username', {
             rules: [{ required: true, message: '用户名不能为空' }],
             initialValue: userData ? userData.username : '',
-          })(<Input onKeyDown={onKeyDown} placeholder="请输入用户名（登录账户）" />)}
-        </FormItem>
-      )}
-      {!resetPassword && (
+          })(<Input onKeyDown={onKeyDown} placeholder="请输入用户名（登录账户）" />)
+        )}
+      </FormItem>
+      {!resetPassword && !assignPermission && (
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="名称">
           {form.getFieldDecorator('name', {
             rules: [{ required: true, message: '名称不能为空' }],
@@ -102,24 +114,27 @@ const UserForm = Form.create()(props => {
           })(<Input onKeyDown={onKeyDown} placeholder="请输入名称" />)}
         </FormItem>
       )}
-      {showPassword && (
+      {showPassword && !assignPermission && (
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="密码">
           {form.getFieldDecorator('password', {
             rules: [{ required: true, pattern: /[\S]{6,}/, message: '密码至少六位' }],
           })(<Input type="password" onKeyDown={onKeyDown} placeholder="请输入密码" />)}
         </FormItem>
       )}
-      {showPassword && (
+      {showPassword && !assignPermission && (
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="确认密码">
           {form.getFieldDecorator('password_confirmation', {
             rules: [{ required: true, pattern: /[\S]{6,}/, message: '密码至少六位' }],
           })(<Input type="password" onKeyDown={onKeyDown} placeholder="请再次输入密码" />)}
         </FormItem>
       )}
-      {!resetPassword && (
+      {!resetPassword && !assignPermission && (
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="管理组">
           {form.getFieldDecorator('groups', {
-            rules: [{ required: true, message: '请选择管理组' }],
+            // rules: [{
+            //   required: true,
+            //   message: '请选择管理组'
+            // }],
             initialValue: userData ? userData.groups.map(item => item.id) : [],
           })(
             <Select
@@ -138,12 +153,36 @@ const UserForm = Form.create()(props => {
           )}
         </FormItem>
       )}
+      {(isAdd || assignPermission) && (
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="权限">
+          {form.getFieldDecorator('permissions', {
+            initialValue: userData ? userData.permissions.map(item => item.id) : [],
+            valuePropName: 'targetKeys',
+          })(
+            <Transfer
+              rowKey={record => record.value}
+              dataSource={permissionOptions}
+              showSearch
+              disabled={userData && userData.isSuperAdmin}
+              titles={['未分配', '已获得']}
+              // operations={['分', '撤']}
+              // filterOption={this.filterOption}
+              // selectedKeys={[]}
+              // targetKeys={userData ? userData.permissions.map(item => item.id) : []}
+              // onChange={this.handleChange}
+              // onSearch={this.handleSearch}
+              render={item => item.text}
+            />
+          )}
+        </FormItem>
+      )}
     </Modal>
   );
 });
 
 @Form.create()
-@connect(({ adminUser, loading }) => ({
+@connect(({ user, adminUser, loading }) => ({
+  currentUser: user.currentUser,
   adminUser,
   loading: loading.models.adminUser,
 }))
@@ -169,6 +208,7 @@ class Users extends PureComponent {
     modalVisible: false,
     confirmLoading: false,
     resetPassword: false,
+    assignPermission: false,
     userData: null,
   };
 
@@ -277,12 +317,15 @@ class Users extends PureComponent {
       case 'delete':
         this.deleteUsers(selectedRows, true);
         break;
+      case 'undo-delete':
+        this.deleteUsers(selectedRows, true, true);
+        break;
       default:
         break;
     }
   };
 
-  deleteUsers = (users, resetSelectedRows = false) => {
+  deleteUsers = (users, resetSelectedRows = false, undo = false) => {
     const { dispatch } = this.props;
     const usersLabel = users.map(user => (
       <Tag key={user.id} color="orange">
@@ -291,20 +334,24 @@ class Users extends PureComponent {
     ));
     const confirmContent = (
       <Row>
-        <Col>确定要删除管理员 {usersLabel} 吗？</Col>
+        <Col>
+          确定要 {undo ? '恢复' : '删除'} 管理员 {usersLabel} 吗？
+        </Col>
       </Row>
     );
     const that = this;
     confirm({
-      title: '警告⚠️',
+      icon: undo ? 'question-circle' : 'warning',
+      title: undo ? '提示' : '警告',
       content: confirmContent,
-      okText: '确定',
+      okText: undo ? '确定恢复' : '⚠️确定删除',
       cancelText: '再想想',
       onOk() {
         dispatch({
           type: 'adminUser/delete',
           payload: {
             ids: users.map(row => row.id),
+            undo,
           },
           callback: response => {
             if (response && !response.error_message) {
@@ -329,6 +376,7 @@ class Users extends PureComponent {
       modalVisible: !!flag,
       userData: null,
       resetPassword: false,
+      assignPermission: false,
     });
   };
 
@@ -344,6 +392,16 @@ class Users extends PureComponent {
       modalVisible: !!flag,
       userData: record,
       resetPassword: true,
+      assignPermission: false,
+    });
+  };
+
+  assignPermission = (flag, record) => {
+    this.setState({
+      modalVisible: !!flag,
+      userData: record,
+      resetPassword: false,
+      assignPermission: true,
     });
   };
 
@@ -371,16 +429,32 @@ class Users extends PureComponent {
   renderForm() {
     const {
       form: { getFieldDecorator },
+      adminUser: { trashOptions },
     } = this.props;
     const { expandForm, formValues } = this.state;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
+          <Col md={5} sm={24}>
             <FormItem label="关键词">
               {getFieldDecorator('keywords', {
                 initialValue: formValues.keywords,
               })(<AutoComplete dataSource={[]} placeholder="用户名/名称" />)}
+            </FormItem>
+          </Col>
+          <Col md={5} sm={24}>
+            <FormItem label="删除状态">
+              {getFieldDecorator('trash')(
+                <Select style={{ width: '100%' }}>
+                  {trashOptions.map(trashOption => {
+                    return (
+                      <Option key={trashOption.value} value={trashOption.value}>
+                        {trashOption.text}
+                      </Option>
+                    );
+                  })}
+                </Select>
+              )}
             </FormItem>
           </Col>
           <Animate transitionName="fade">
@@ -397,7 +471,7 @@ class Users extends PureComponent {
               </Col>
             )}
           </Animate>
-          <Col md={8} sm={24}>
+          <Col md={6} sm={24}>
             <Row type="flex" justify="end">
               <Col>
                 <span className={TableListStyles.submitButtons}>
@@ -422,13 +496,30 @@ class Users extends PureComponent {
 
   render() {
     const {
-      adminUser: { users, groupOptions },
+      currentUser,
+      adminUser: { users, groupOptions, permissionOptions },
       loading,
     } = this.props;
-    const { selectedRows, modalVisible, confirmLoading, resetPassword, userData } = this.state;
+    const {
+      selectedRows,
+      modalVisible,
+      confirmLoading,
+      resetPassword,
+      assignPermission,
+      userData,
+    } = this.state;
     const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="delete">删除</Menu.Item>
+      <Menu onClick={this.handleMenuClick} selectedKeys={[]} theme="light">
+        {currentUser && currentUser.can && currentUser.can.delete_admin_user && (
+          <Menu.Item key="delete">
+            <Icon type="delete" theme="twoTone" twoToneColor="#f00" /> 批量删除
+          </Menu.Item>
+        )}
+        {currentUser && currentUser.can && currentUser.can.delete_admin_user && (
+          <Menu.Item key="undo-delete">
+            <Icon type="undo" theme="twoTone" twoToneColor="#f00" /> 批量恢复
+          </Menu.Item>
+        )}
       </Menu>
     );
     const columns = [
@@ -447,7 +538,7 @@ class Users extends PureComponent {
         render(groups) {
           const groupsLabel = groups.map(group => (
             <Tag key={group.id} color="blue">
-              {group.name}
+              {group.text}
             </Tag>
           ));
           return groupsLabel;
@@ -463,15 +554,55 @@ class Users extends PureComponent {
         title: '操作',
         render: (text, record) => (
           <Fragment>
-            {!record.disabled && (
-              <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
+            {currentUser &&
+              currentUser.can &&
+              currentUser.can.post_admin_user &&
+              (record.isSuperAdmin ? (
+                <Popover content="超级管理员已拥有全部权限" title="" trigger="hover" disabled>
+                  权限分配
+                </Popover>
+              ) : (
+                <a
+                  onClick={() => this.assignPermission(true, record)}
+                  disabled={record.isSuperAdmin}
+                >
+                  权限分配
+                </a>
+              ))}
+            {currentUser && currentUser.can && currentUser.can.post_admin_user && (
+              <Divider type="vertical" />
             )}
-            {!record.disabled && <Divider type="vertical" />}
-            {!record.disabled && (
+            {currentUser && currentUser.can && currentUser.can.post_admin_user && (
               <a onClick={() => this.handleResetPasswordModalVisible(true, record)}>重置密码</a>
             )}
-            {!record.disabled && <Divider type="vertical" />}
-            {!record.disabled && <a onClick={() => this.deleteUsers([record])}>删除</a>}
+            {currentUser && currentUser.can && currentUser.can.post_admin_user && (
+              <Divider type="vertical" />
+            )}
+            {currentUser && currentUser.can && currentUser.can.post_admin_user && (
+              <Icon
+                type="edit"
+                theme="twoTone"
+                onClick={() => this.handleUpdateModalVisible(true, record)}
+              />
+            )}
+            {currentUser && currentUser.can && currentUser.can.delete_admin_user && (
+              <Divider type="vertical" />
+            )}
+            {currentUser &&
+              currentUser.can &&
+              currentUser.can.delete_admin_user &&
+              (record.deleted_at ? (
+                <Tag color="orange" onClick={() => this.deleteUsers([record], false, true)}>
+                  恢复
+                </Tag>
+              ) : (
+                <Icon
+                  type="delete"
+                  theme="twoTone"
+                  twoToneColor="#f00"
+                  onClick={() => this.deleteUsers([record])}
+                />
+              ))}
           </Fragment>
         ),
       },
@@ -490,15 +621,18 @@ class Users extends PureComponent {
               <Button icon="user-add" type="primary" onClick={() => this.handleModalVisible(true)}>
                 新增
               </Button>
-              {selectedRows.length > 0 && (
-                <span>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      批量操作 <Icon type="down" />
-                    </Button>
-                  </Dropdown>
-                </span>
-              )}
+              {selectedRows.length > 0 &&
+                currentUser &&
+                currentUser.can &&
+                currentUser.can.delete_admin_user && (
+                  <span>
+                    <Dropdown overlay={menu}>
+                      <Button type="dashed">
+                        批量操作 <Icon type="down" />
+                      </Button>
+                    </Dropdown>
+                  </span>
+                )}
             </div>
             <StandardTable
               rowKey="id"
@@ -516,8 +650,10 @@ class Users extends PureComponent {
           confirmLoading={confirmLoading}
           modalVisible={modalVisible}
           resetPassword={resetPassword}
+          assignPermission={assignPermission}
           userData={userData}
           groupOptions={groupOptions}
+          permissionOptions={permissionOptions}
         />
       </PageHeaderWrapper>
     );

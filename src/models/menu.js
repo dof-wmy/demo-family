@@ -106,6 +106,21 @@ export default {
       const { routes, authority } = payload;
       const originalMenuData = memoizeOneFormatter(routes, authority);
       const menuData = filterMenuData(originalMenuData);
+      // TODO 从接口根据管理员权限获取菜单
+      // const menuData = [
+      //   {
+      //     path: '/index',
+      //     name: 'home',
+      //     icon: 'dashboard',
+      //     exact: true,
+      //     locale: 'menu.home',
+      //   },
+      //   {
+      //     path: '/kk',
+      //     name: 'kk',
+      //   },
+      // ];
+      // console.log(originalMenuData, menuData);
       const breadcrumbNameMap = memoizeOneGetBreadcrumbNameMap(originalMenuData);
       yield put({
         type: 'save',

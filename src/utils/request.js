@@ -150,33 +150,33 @@ export default function request(url, option) {
             type: 'login/logout',
           });
         }
-        return;
-      }
-      if (status === 403) {
+        // return;
+      } else if (status === 403) {
         // router.push('/exception/403');
         notification.error({
           message: '无权限',
           description: '请联系管理员授权',
         });
-        return;
-      }
-      // if (status >= 404 && status < 422) {
-      //   router.push('/exception/404');
-      // return;
-      // }
-      if (status === 422) {
+        // return;
+      } else if (status === 422) {
         e.response.json().then(data => {
           message.error(data.errors[Object.keys(data.errors)[0]][0]);
         });
-        return;
+        // return;
+      } else {
+        console.log(e);
+        notification.error({
+          message: '网络错误',
+          description: '请稍后再试',
+        });
+        // if (status >= 404 && status < 422) {
+        //   router.push('/exception/404');
+        // return;
+        // }
+        // if (status <= 504 && status >= 500) {
+        //   router.push('/exception/500');
+        //   return;
+        // }
       }
-      // if (status <= 504 && status >= 500) {
-      //   router.push('/exception/500');
-      //   return;
-      // }
-      notification.error({
-        message: '网络错误',
-        description: '请稍后再试',
-      });
     });
 }

@@ -21,7 +21,7 @@ class Index extends Component {
       <Card title="基本信息">
         <Row>
           <Col span={2}>
-            <Avatar size="large" icon="user" src={currentUser.avatar} alt={currentUser.username}>
+            <Avatar size="large" src={currentUser.avatar} icon="user" alt={currentUser.username}>
               {currentUser.name}
             </Avatar>
           </Col>

@@ -13,7 +13,8 @@ export default {
   },
 
   effects: {
-    *login({ payload }, { call, put, take }) {
+    // *login({ payload }, { call, put, take }) {
+    *login({ payload }, { call, put }) {
       const response = yield call(apiLogin, payload);
       const type = 'account';
       yield put({
@@ -33,10 +34,10 @@ export default {
       });
       // Login successfully
       if (response) {
-        yield put({
-          type: 'user/fetchCurrent',
-        });
-        yield take('user/fetchCurrent/@@end');
+        // yield put({
+        //   type: 'user/fetchCurrent',
+        // });
+        // yield take('user/fetchCurrent/@@end');
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -68,6 +69,10 @@ export default {
           status: false,
           currentAuthority: 'guest',
         },
+      });
+      yield put({
+        type: 'user/saveCurrentUser',
+        payload: {},
       });
       reloadAuthorized();
       yield put(

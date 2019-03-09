@@ -8,7 +8,9 @@ export default {
       list: [],
       pagination: {},
     },
+    trashOptions: [],
     groupOptions: [],
+    permissionOptions: [],
   },
 
   effects: {
@@ -19,17 +21,19 @@ export default {
           showSizeChanger: false,
           showQuickJumper: false,
         },
-        response.pagination || {}
+        response.meta.paginatorTransformer || {}
       );
 
       yield put({
         type: 'save',
         payload: {
           users: {
-            list: response.users || [],
+            list: response.data || [],
             pagination,
           },
-          groupOptions: response.groupOptions || [],
+          trashOptions: response.meta.trashOptions || [],
+          groupOptions: response.meta.groupOptions || [],
+          permissionOptions: response.meta.permissionOptions || [],
         },
       });
     },
