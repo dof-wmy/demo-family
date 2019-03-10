@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Card, Row, Col, Avatar } from 'antd';
+import { Skeleton, Card, Row, Col, Avatar } from 'antd';
 
-@connect(({ user }) => ({
+@connect(({ user, loading }) => ({
   currentUser: user.currentUser,
+  loading: loading.models.user,
 }))
 class Index extends Component {
   constructor(props) {
@@ -16,18 +17,20 @@ class Index extends Component {
   componentWillUnmount() {}
 
   render() {
-    const { currentUser } = this.props;
+    const { currentUser, loading } = this.props;
     return (
       <Card title="基本信息">
-        <Row>
-          <Col span={2}>
-            <Avatar size="large" src={currentUser.avatar} icon="user" alt={currentUser.username}>
-              {currentUser.name}
-            </Avatar>
-          </Col>
-          <Col span={22}>{currentUser.username}</Col>
-          <Col span={22}>{currentUser.name}</Col>
-        </Row>
+        <Skeleton avatar paragraph={{ rows: 1 }} loading={loading}>
+          <Row>
+            <Col span={2}>
+              <Avatar size="large" src={currentUser.avatar} icon="user" alt={currentUser.username}>
+                {currentUser.name}
+              </Avatar>
+            </Col>
+            <Col span={22}>{currentUser.username}</Col>
+            <Col span={22}>{currentUser.name}</Col>
+          </Row>
+        </Skeleton>
       </Card>
     );
   }
