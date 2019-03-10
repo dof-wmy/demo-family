@@ -444,7 +444,9 @@ class Users extends PureComponent {
           </Col>
           <Col md={5} sm={24}>
             <FormItem label="删除状态">
-              {getFieldDecorator('trash')(
+              {getFieldDecorator('trash', {
+                initialValue: '',
+              })(
                 <Select style={{ width: '100%' }}>
                   {trashOptions.map(trashOption => {
                     return (
@@ -558,7 +560,13 @@ class Users extends PureComponent {
               currentUser.can &&
               currentUser.can.post_admin_user &&
               (record.isSuperAdmin ? (
-                <Popover content="超级管理员已拥有全部权限" title="" trigger="hover" disabled>
+                <Popover
+                  placement="left"
+                  content="超级管理员已拥有全部权限"
+                  title=""
+                  trigger="hover"
+                  disabled
+                >
                   权限分配
                 </Popover>
               ) : (
