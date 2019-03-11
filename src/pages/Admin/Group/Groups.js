@@ -14,6 +14,8 @@ const GroupForm = Form.create()(props => {
     permissionOptions,
     onToggle,
     switchLoading,
+    switchOnDisabled,
+    switchOffDisabled,
     // switchChecked,
   } = props;
 
@@ -22,14 +24,19 @@ const GroupForm = Form.create()(props => {
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
         <Col md={8} lg={24} xl={48}>
           {permissionOptions.map(permission => {
+            const switchChecked = group.permissions.indexOf(permission.value) !== -1;
+            const switchDisabled =
+              loading ||
+              (switchChecked && switchOffDisabled) ||
+              (!switchChecked && switchOnDisabled);
             return (
               <FormItem key={permission.value}>
                 <Switch
                   checkedChildren={permission.text}
                   unCheckedChildren={permission.text}
                   // defaultChecked={group.permissions.indexOf(permission.value) !== -1}
-                  checked={group.permissions.indexOf(permission.value) !== -1}
-                  disabled={loading}
+                  checked={switchChecked}
+                  disabled={switchDisabled}
                   loading={switchLoading[`${group.id}_${permission.value}`]}
                   onChange={(checked, event) =>
                     onToggle(
@@ -144,8 +151,13 @@ class Groups extends Component {
     const {
       loading,
       adminGroup: { groups, permissionOptions },
+      currentUser,
     } = this.props;
     const { switchLoading } = this.state;
+    const switchOnDisabled =
+      !currentUser || !currentUser.can || !currentUser.can.post_permission_of_admin_group;
+    const switchOffDisabled =
+      !currentUser || !currentUser.can || !currentUser.can.delete_permission_of_admin_group;
     return (
       <Card title="管理组权限分配">
         <Tabs tabPosition="top" style={{ height: 300 }}>
@@ -162,6 +174,8 @@ class Groups extends Component {
                     permissionOptions={permissionOptions}
                     onToggle={this.onToggle}
                     switchLoading={switchLoading}
+                    switchOnDisabled={switchOnDisabled}
+                    switchOffDisabled={switchOffDisabled}
                   />
                 )}
               </TabPane>
