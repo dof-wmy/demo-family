@@ -154,3 +154,17 @@ export async function adminUsersDelete(params) {
     body: params,
   });
 }
+
+export async function adminGroups(params) {
+  return request(`${API_ROOT}/admin_groups?${stringify(params)}`);
+}
+
+export async function adminGroupPermission(params) {
+  return request(
+    `${API_ROOT}/admin_groups/${params.group_id}/permissions/${params.permission_id}`,
+    {
+      method: params.checked ? 'POST' : 'DELETE',
+      body: {},
+    }
+  );
+}

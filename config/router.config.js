@@ -308,6 +308,12 @@ export default [
             icon: 'user',
             component: './Admin/User/Users',
           },
+          {
+            path: '/admin/group',
+            name: 'group',
+            icon: 'team',
+            component: './Admin/Group/Groups',
+          },
         ],
       },
       {

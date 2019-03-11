@@ -562,7 +562,7 @@ class Users extends PureComponent {
               (record.isSuperAdmin ? (
                 <Popover
                   placement="left"
-                  content="超级管理员已拥有全部权限"
+                  content="超级管理员拥有全部权限"
                   title=""
                   trigger="hover"
                   disabled
