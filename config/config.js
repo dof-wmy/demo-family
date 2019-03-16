@@ -91,10 +91,6 @@ export default {
   theme: {
     'primary-color': primaryColor,
   },
-  externals: {
-    '@antv/data-set': 'DataSet',
-    bizcharts: 'BizCharts',
-  },
   // proxy: {
   //   '/server/api/': {
   //     target: 'https://preview.pro.ant.design/',
