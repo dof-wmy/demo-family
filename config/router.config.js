@@ -280,6 +280,7 @@ export default [
         name: 'editor',
         icon: 'highlight',
         path: '/editor',
+        hideInMenu: true,
         routes: [
           {
             path: '/editor/flow',
