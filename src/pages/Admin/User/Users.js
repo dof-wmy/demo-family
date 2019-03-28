@@ -21,6 +21,7 @@ import {
   Tooltip,
   Transfer,
   Popover,
+  Typography,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -29,6 +30,7 @@ import TableListStyles from './TableList.less';
 // import { View } from '@antv/g2/src';
 
 const { Option } = Select;
+const { Paragraph } = Typography;
 
 const { confirm } = Modal;
 const { RangePicker } = DatePicker;
@@ -570,12 +572,23 @@ class Users extends PureComponent {
                   权限分配
                 </Popover>
               ) : (
-                <a
-                  onClick={() => this.assignPermission(true, record)}
-                  disabled={record.isSuperAdmin}
+                <Tooltip
+                  placement="topLeft"
+                  title={
+                    <Paragraph>
+                      <Icon type="exclamation-circle" />
+                      管理员的权限分配是作为补充，请尽量使用管理组进行权限控制
+                    </Paragraph>
+                  }
+                  arrowPointAtCenter
                 >
-                  权限分配
-                </a>
+                  <a
+                    onClick={() => this.assignPermission(true, record)}
+                    disabled={record.isSuperAdmin}
+                  >
+                    权限分配
+                  </a>
+                </Tooltip>
               ))}
             {currentUser && currentUser.can && currentUser.can.post_admin_user && (
               <Divider type="vertical" />

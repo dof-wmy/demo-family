@@ -39,6 +39,11 @@ export default {
   'menu.account.trigger': '触发报错',
   'menu.account.logout': '退出登录',
 
+  'menu.editor': '图形编辑器',
+  'menu.editor.flow': '流程编辑器',
+  'menu.editor.mind': '脑图编辑器',
+  'menu.editor.koni': '拓扑编辑器',
+
   'menu.me.setting': '个人设置',
   'menu.admin': '后台',
   'menu.admin.user': '管理员',

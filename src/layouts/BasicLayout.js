@@ -10,7 +10,6 @@ import logo from '../assets/logo.svg';
 import Footer from './Footer';
 import Header from './Header';
 import Context from './MenuContext';
-import PageLoading from '@/components/PageLoading';
 import SiderMenu from '@/components/SiderMenu';
 import getPageTitle from '@/utils/getPageTitle';
 import styles from './BasicLayout.less';
@@ -49,7 +48,7 @@ class BasicLayout extends React.Component {
   componentDidMount() {
     const {
       dispatch,
-      route: { routes, authority },
+      route: { routes, path, authority },
     } = this.props;
     dispatch({
       type: 'user/fetchCurrent',
@@ -59,7 +58,7 @@ class BasicLayout extends React.Component {
     });
     dispatch({
       type: 'menu/getMenuData',
-      payload: { routes, authority },
+      payload: { routes, path, authority },
     });
 
     if (PUSHER_APP_KEY) {
@@ -167,7 +166,7 @@ class BasicLayout extends React.Component {
             )}
           </ContainerQuery>
         </DocumentTitle>
-        <Suspense fallback={<PageLoading />}>{this.renderSettingDrawer()}</Suspense>
+        <Suspense fallback={null}>{this.renderSettingDrawer()}</Suspense>
       </React.Fragment>
     );
   }

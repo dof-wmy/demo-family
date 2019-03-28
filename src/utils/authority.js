@@ -13,7 +13,7 @@ export function getAuthority(str) {
   if (typeof authority === 'string') {
     return [authority];
   }
-  return authority || ['admin'];
+  return authority;
 }
 
 export function setAuthority(authority) {
@@ -21,7 +21,7 @@ export function setAuthority(authority) {
   return localStorage.setItem('antd-pro-authority', JSON.stringify(proAuthority));
 }
 
-export function getAccessToken(){
+export function getAccessToken() {
   return localStorage.getItem('access-token');
 }
 
