@@ -3,6 +3,7 @@ import Animate from 'rc-animate';
 import { connect } from 'dva';
 import moment from 'moment';
 import {
+  Alert,
   Row,
   Col,
   Card,
@@ -21,7 +22,6 @@ import {
   Tooltip,
   Transfer,
   Popover,
-  Typography,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -30,7 +30,6 @@ import TableListStyles from './TableList.less';
 // import { View } from '@antv/g2/src';
 
 const { Option } = Select;
-const { Paragraph } = Typography;
 
 const { confirm } = Modal;
 const { RangePicker } = DatePicker;
@@ -92,6 +91,12 @@ const UserForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
+      {assignPermission && (
+        <Alert
+          message="请使用管理组进行权限控制，管理员的权限分配只是针对极特殊情况的补充"
+          type="warning"
+        />
+      )}
       {!isAdd &&
         form.getFieldDecorator('id', {
           initialValue: userData ? userData.id : null,
@@ -155,7 +160,7 @@ const UserForm = Form.create()(props => {
           )}
         </FormItem>
       )}
-      {(isAdd || assignPermission) && (
+      {assignPermission && (
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="权限">
           {form.getFieldDecorator('permissions', {
             initialValue: userData ? userData.permissions.map(item => item.id) : [],
@@ -572,23 +577,12 @@ class Users extends PureComponent {
                   权限分配
                 </Popover>
               ) : (
-                <Tooltip
-                  placement="topLeft"
-                  title={
-                    <Paragraph>
-                      <Icon type="exclamation-circle" />
-                      管理员的权限分配是作为补充，请尽量使用管理组进行权限控制
-                    </Paragraph>
-                  }
-                  arrowPointAtCenter
+                <a
+                  onClick={() => this.assignPermission(true, record)}
+                  disabled={record.isSuperAdmin}
                 >
-                  <a
-                    onClick={() => this.assignPermission(true, record)}
-                    disabled={record.isSuperAdmin}
-                  >
-                    权限分配
-                  </a>
-                </Tooltip>
+                  权限分配
+                </a>
               ))}
             {currentUser && currentUser.can && currentUser.can.post_admin_user && (
               <Divider type="vertical" />

@@ -93,10 +93,9 @@ class Groups extends Component {
     const confirmContent = (
       <Row>
         <Col>
-          管理组
-          <Tag color="green">{group.text}</Tag>
-          <Tag color={checked ? '' : 'red'}>{checked ? '授权' : '删除授权'}</Tag>
-          <Tag color="blue">{permission.text}</Tag>
+          <b color="green">{group.text}</b>
+          &nbsp;<Tag color={checked ? 'green' : 'red'}>{checked ? '授权' : '删除授权'}</Tag>
+          <b color="blue">{permission.text}</b>
           吗？
         </Col>
       </Row>
