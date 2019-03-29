@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import Pusher from 'pusher-js';
-import { Layout } from 'antd';
+import { Layout, notification } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
 import { ContainerQuery } from 'react-container-query';
@@ -61,16 +61,48 @@ class BasicLayout extends React.Component {
       payload: { routes, path, authority },
     });
 
-    if (PUSHER_APP_KEY) {
+    if (PUSHER_APP_KEY && PUSHER_CHANNEL) {
       Pusher.logToConsole = PUSHER_LOG_TO_CONSOLE;
-      // const pusher = new Pusher(PUSHER_APP_KEY, {
-      //   cluster: PUSHER_APP_CLUSTER,
-      //   forceTLS: true,
-      // });
-      // const channel = pusher.subscribe('public-channel');
-      // channel.bind('public-event', data => {
-      //   console.log(data);
-      // });
+      const pusher = new Pusher(PUSHER_APP_KEY, {
+        cluster: PUSHER_APP_CLUSTER,
+        forceTLS: true,
+      });
+      const channel = pusher.subscribe(PUSHER_CHANNEL);
+      channel.bind('notice', data => {
+        notification.destroy();
+        notification.config({
+          placement: 'topRight',
+          top: 50,
+          duration: 5,
+        });
+        notification.open({
+          message: data.title || '提醒',
+          description: data.message,
+          onClick: () => {
+            console.log('Notification Clicked!', `pusher-${PUSHER_CHANNEL}-notice`, data);
+          },
+        });
+      });
+
+      channel.bind('App\\Events\\AnnouncementPublished', data => {
+        notification.destroy();
+        notification.config({
+          placement: 'topLeft',
+          top: 50,
+          duration: null,
+        });
+        notification.info({
+          message: `公告：${data.announcement.title}`,
+          description: data.announcement.content,
+          onClick: () => {
+            console.log(
+              'AnnouncementPublished!',
+              `pusher-${PUSHER_CHANNEL}-AnnouncementPublished`,
+              data
+            );
+          },
+        });
+      });
     }
   }
 

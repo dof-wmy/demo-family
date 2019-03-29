@@ -15,6 +15,7 @@ module.exports = {
     PUSHER_APP_KEY: true,
     PUSHER_APP_CLUSTER: true,
     PUSHER_LOG_TO_CONSOLE: true,
+    PUSHER_CHANNEL: true,
     page: true,
   },
   rules: {

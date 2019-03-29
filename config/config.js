@@ -15,6 +15,7 @@ const {
   PUSHER_APP_KEY,
   PUSHER_APP_CLUSTER,
   PUSHER_LOG_TO_CONSOLE,
+  PUSHER_CHANNEL,
   TEST,
 } = process.env;
 
@@ -79,6 +80,7 @@ export default {
     PUSHER_APP_KEY: PUSHER_APP_KEY || '',
     PUSHER_APP_CLUSTER: PUSHER_APP_CLUSTER || 'ap3',
     PUSHER_LOG_TO_CONSOLE: PUSHER_LOG_TO_CONSOLE || false,
+    PUSHER_CHANNEL: PUSHER_CHANNEL || '',
   },
   treeShaking: true,
   targets: {
