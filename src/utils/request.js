@@ -1,8 +1,14 @@
-import fetch from 'dva/fetch';
+
+/**
+ * request 网络请求工具
+ * 更详细的api文档: https://bigfish.alipay.com/doc/api#request
+ */
+import { extend } from 'umi-request';
 import { notification, message } from 'antd';
 // import router from 'umi/router';
-import hash from 'hash.js';
-import { isAntdPro } from './utils';
+// import fetch from 'dva/fetch';
+// import hash from 'hash.js';
+// import { isAntdPro } from './utils';
 import { getAccessToken } from '@/utils/authority';
 
 const codeMessage = {
@@ -23,8 +29,15 @@ const codeMessage = {
   504: '网关超时。',
 };
 
-const checkStatus = response => {
-  if (response.status >= 200 && response.status < 300) {
+/**
+ * 异常处理程序
+ */
+const errorHandler = error => {
+  const { response = {} } = error;
+  const errortext = codeMessage[response.status] || response.statusText;
+  const { status, url } = response;
+
+  if (status >= 200 && status < 300) {
     response
       .clone()
       .json()
@@ -38,149 +51,70 @@ const checkStatus = response => {
       });
     return response;
   }
-  const errortext = codeMessage[response.status] || response.statusText;
-  console.log('request', {
-    message: `请求错误 ${response.status}: ${response.url}`,
+
+  if (status === 401) {
+    if (window.location.pathname !== '/user/login') {
+      notification.error({
+        message: '未登录或登录已过期，请重新登录。',
+      });
+      // @HACK
+      /* eslint-disable no-underscore-dangle */
+      window.g_app._store.dispatch({
+        type: 'login/logout',
+      });
+    }
+    return null;
+  }
+
+  // environment should not be used
+  if (status === 403) {
+    notification.error({
+      message: '无权限',
+      description: '请联系管理员授权',
+    });
+    // router.push('/exception/403');
+    return null;
+  }
+  if (status === 422) {
+    response.json().then(data => {
+      message.error(data.errors[Object.keys(data.errors)[0]][0]);
+    });
+    return null;
+  }
+
+  console.log(error, {
+    message: `请求错误 ${status}: ${url}`,
     description: errortext,
     response,
   });
-  const error = new Error(errortext);
-  error.name = response.status;
-  error.response = response;
-  throw error;
-};
 
-const cachedSave = (response, hashcode) => {
-  /**
-   * Clone a response data and store it in sessionStorage
-   * Does not support data other than json, Cache only json
-   */
-  const contentType = response.headers.get('Content-Type');
-  if (contentType && contentType.match(/application\/json/i)) {
-    // All data is saved as text
-    response
-      .clone()
-      .text()
-      .then(content => {
-        sessionStorage.setItem(hashcode, content);
-        sessionStorage.setItem(`${hashcode}:timestamp`, Date.now());
-      });
-  }
-  return response;
+  notification.error({
+    message: '网络错误',
+    description: '请稍后再试',
+  });
+
+  // if (status >= 404 && status < 422) {
+  //   router.push('/exception/404');
+  // }
+  // if (status <= 504 && status >= 500) {
+  //   router.push('/exception/500');
+  //   return null;
+  // }
+
+  return null;
 };
 
 /**
- * Requests a URL, returning a promise.
- *
- * @param  {string} url       The URL we want to request
- * @param  {object} [option] The options we want to pass to "fetch"
- * @return {object}           An object containing either "data" or "err"
+ * 配置request请求时的默认参数
  */
-export default function request(url, option) {
-  const options = {
-    expirys: isAntdPro(),
-    ...option,
-  };
-  /**
-   * Produce fingerprints based on url and parameters
-   * Maybe url has the same parameters
-   */
-  const fingerprint = url + (options.body ? JSON.stringify(options.body) : '');
-  const hashcode = hash
-    .sha256()
-    .update(fingerprint)
-    .digest('hex');
+const accessToken = getAccessToken();
+const request = extend({
+  errorHandler, // 默认错误处理
+  credentials: 'include', // 默认请求是否带上cookie
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest',
+    'Authorization': `Bearer ${accessToken}`,
+  },
+});
 
-  const defaultOptions = {
-    credentials: 'include',
-  };
-  const newOptions = { ...defaultOptions, ...options };
-  newOptions.headers = {};
-  if (
-    newOptions.method === 'POST' ||
-    newOptions.method === 'PUT' ||
-    newOptions.method === 'DELETE'
-  ) {
-    newOptions.headers = {
-      Accept: 'application/json',
-      ...newOptions.headers,
-    };
-    if (!(newOptions.body instanceof FormData)) {
-      newOptions.headers['Content-Type'] = 'application/json; charset=utf-8';
-      newOptions.body = JSON.stringify(newOptions.body);
-    }
-  }
-  const accessToken = getAccessToken();
-  newOptions.headers.Authorization = `Bearer ${accessToken}`;
-  newOptions.headers['X-Requested-With'] = 'XMLHttpRequest';
-  const expirys = options.expirys && 60;
-  // options.expirys !== false, return the cache,
-  if (options.expirys !== false) {
-    const cached = sessionStorage.getItem(hashcode);
-    const whenCached = sessionStorage.getItem(`${hashcode}:timestamp`);
-    if (cached !== null && whenCached !== null) {
-      const age = (Date.now() - whenCached) / 1000;
-      if (age < expirys) {
-        const response = new Response(new Blob([cached]));
-        return response.json();
-      }
-      sessionStorage.removeItem(hashcode);
-      sessionStorage.removeItem(`${hashcode}:timestamp`);
-    }
-  }
-  return fetch(url, newOptions)
-    .then(checkStatus)
-    .then(response => cachedSave(response, hashcode))
-    .then(response => {
-      // DELETE and 204 do not return data by default
-      // using .json will report an error.
-      if (
-        // newOptions.method === 'DELETE'
-        // ||
-        response.status === 204
-      ) {
-        return response.text();
-      }
-      return response.json();
-    })
-    .catch(e => {
-      // environment should not be used
-      const status = e.name;
-      if (status === 401) {
-        if (window.location.pathname !== '/user/login') {
-          // @HACK
-          /* eslint-disable no-underscore-dangle */
-          window.g_app._store.dispatch({
-            type: 'login/logout',
-          });
-        }
-        // return;
-      } else if (status === 403) {
-        // router.push('/exception/403');
-        notification.error({
-          message: '无权限',
-          description: '请联系管理员授权',
-        });
-        // return;
-      } else if (status === 422) {
-        e.response.json().then(data => {
-          message.error(data.errors[Object.keys(data.errors)[0]][0]);
-        });
-        // return;
-      } else {
-        console.log(e);
-        notification.error({
-          message: '网络错误',
-          description: '请稍后再试',
-        });
-        // if (status >= 404 && status < 422) {
-        //   router.push('/exception/404');
-        // return;
-        // }
-        // if (status <= 504 && status >= 500) {
-        //   router.push('/exception/500');
-        //   return;
-        // }
-      }
-    });
-}
+export default request;
