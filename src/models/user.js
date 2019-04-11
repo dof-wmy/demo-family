@@ -26,9 +26,20 @@ export default {
         payload: response,
       });
 
-      const authority = response.groups;
-      authority.push('admin');
-      setAuthority(authority);
+      yield put({
+        type: 'updateAuthority',
+        payload: response,
+      });
+
+      // 更新菜单
+      if (response.menuData) {
+        yield put({
+          type: 'menu/save',
+          payload: {
+            menuData: response.menuData,
+          },
+        });
+      }
     },
     *updateMe({ payload, callback }, { call }) {
       const response = yield call(updateMe, payload);
@@ -53,6 +64,14 @@ export default {
       return {
         ...state,
         currentUser,
+      };
+    },
+    updateAuthority(state, action) {
+      const authority = action.payload.roles || [];
+      authority.push('admin');
+      setAuthority(authority);
+      return {
+        ...state,
       };
     },
     changeNotifyCount(state, action) {

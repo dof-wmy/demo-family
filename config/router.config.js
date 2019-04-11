@@ -323,11 +323,12 @@ export default [
           },
         ],
       },
+
       {
         path: '/admin',
         name: 'admin',
         icon: 'tool',
-        // authority: ['administrator'],
+        hideInMenu: true,
         routes: [
           {
             path: '/admin/user',

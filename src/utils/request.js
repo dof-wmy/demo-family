@@ -101,10 +101,6 @@ const request = extend({
 // request interceptor, change url or options.
 request.interceptors.request.use((url, options) => {
   const accessToken = getAccessToken();
-  console.log({
-    accessToken,
-    options,
-  });
   const newOptions = options;
   newOptions.headers = {
     ...newOptions.headers,
