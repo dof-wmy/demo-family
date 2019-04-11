@@ -118,10 +118,8 @@ class Groups extends Component {
           },
           callback: response => {
             that.switchLoadingChange(group, permission, false);
-            console.log(response, response.error_message, response.data);
             if (response && !response.error_message && response.data) {
               groups[groupIndex] = response.data;
-              // TODO 更新对应group 打开生效 关闭未生效
               dispatch({
                 type: 'adminGroup/save',
                 payload: {
