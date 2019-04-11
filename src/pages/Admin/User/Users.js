@@ -519,12 +519,12 @@ class Users extends PureComponent {
     } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]} theme="light">
-        {currentUser && currentUser.can && currentUser.can.delete_admin_user && (
+        {currentUser && currentUser.permissions && currentUser.permissions.delete_admin_user && (
           <Menu.Item key="delete">
             <Icon type="delete" theme="twoTone" twoToneColor="#f00" /> 批量删除
           </Menu.Item>
         )}
-        {currentUser && currentUser.can && currentUser.can.delete_admin_user && (
+        {currentUser && currentUser.permissions && currentUser.permissions.delete_admin_user && (
           <Menu.Item key="undo-delete">
             <Icon type="undo" theme="twoTone" twoToneColor="#f00" /> 批量恢复
           </Menu.Item>
@@ -564,8 +564,8 @@ class Users extends PureComponent {
         render: (text, record) => (
           <Fragment>
             {currentUser &&
-              currentUser.can &&
-              currentUser.can.post_admin_user &&
+              currentUser.permissions &&
+              currentUser.permissions.post_admin_user &&
               (record.isSuperAdmin ? (
                 <Popover
                   placement="left"
@@ -584,28 +584,28 @@ class Users extends PureComponent {
                   权限分配
                 </a>
               ))}
-            {currentUser && currentUser.can && currentUser.can.post_admin_user && (
+            {currentUser && currentUser.permissions && currentUser.permissions.post_admin_user && (
               <Divider type="vertical" />
             )}
-            {currentUser && currentUser.can && currentUser.can.post_admin_user && (
+            {currentUser && currentUser.permissions && currentUser.permissions.post_admin_user && (
               <a onClick={() => this.handleResetPasswordModalVisible(true, record)}>重置密码</a>
             )}
-            {currentUser && currentUser.can && currentUser.can.post_admin_user && (
+            {currentUser && currentUser.permissions && currentUser.permissions.post_admin_user && (
               <Divider type="vertical" />
             )}
-            {currentUser && currentUser.can && currentUser.can.post_admin_user && (
+            {currentUser && currentUser.permissions && currentUser.permissions.post_admin_user && (
               <Icon
                 type="edit"
                 theme="twoTone"
                 onClick={() => this.handleUpdateModalVisible(true, record)}
               />
             )}
-            {currentUser && currentUser.can && currentUser.can.delete_admin_user && (
-              <Divider type="vertical" />
-            )}
             {currentUser &&
-              currentUser.can &&
-              currentUser.can.delete_admin_user &&
+              currentUser.permissions &&
+              currentUser.permissions.delete_admin_user && <Divider type="vertical" />}
+            {currentUser &&
+              currentUser.permissions &&
+              currentUser.permissions.delete_admin_user &&
               (record.deleted_at ? (
                 <Tag color="orange" onClick={() => this.deleteUsers([record], false, true)}>
                   恢复
@@ -638,8 +638,8 @@ class Users extends PureComponent {
               </Button>
               {selectedRows.length > 0 &&
                 currentUser &&
-                currentUser.can &&
-                currentUser.can.delete_admin_user && (
+                currentUser.permissions &&
+                currentUser.permissions.delete_admin_user && (
                   <span>
                     <Dropdown overlay={menu}>
                       <Button type="dashed">

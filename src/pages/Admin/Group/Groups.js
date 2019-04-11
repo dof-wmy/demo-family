@@ -154,9 +154,13 @@ class Groups extends Component {
     } = this.props;
     const { switchLoading } = this.state;
     const switchOnDisabled =
-      !currentUser || !currentUser.can || !currentUser.can.post_permission_of_admin_group;
+      !currentUser ||
+      !currentUser.permissions ||
+      !currentUser.permissions.post_permission_of_admin_group;
     const switchOffDisabled =
-      !currentUser || !currentUser.can || !currentUser.can.delete_permission_of_admin_group;
+      !currentUser ||
+      !currentUser.permissions ||
+      !currentUser.permissions.delete_permission_of_admin_group;
     return (
       <Card title="管理组权限分配">
         <Tabs tabPosition="top" style={{ height: 300 }}>
