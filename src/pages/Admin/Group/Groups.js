@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Card, Tabs, Form, Switch, Row, Col, Modal, Tag } from 'antd';
+import { Card, Tabs, Form, Switch, Row, Col, Modal, Tag, Icon } from 'antd';
 
 const { TabPane } = Tabs;
 const { confirm } = Modal;
@@ -160,7 +160,10 @@ class Groups extends Component {
       !currentUser.permissions ||
       !currentUser.permissions.delete_permission_of_admin_group;
     return (
-      <Card title="管理组权限分配">
+      <Card
+        // title="管理组权限分配"
+        title={loading && groups.length === 0 && <Icon type="loading" />}
+      >
         <Tabs tabPosition="top" style={{ height: 300 }}>
           {groups.map((group, groupIndex) => {
             return (

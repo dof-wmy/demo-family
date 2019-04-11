@@ -302,7 +302,7 @@ export default [
       {
         path: '/index',
         name: 'home',
-        icon: 'dashboard',
+        icon: 'loading',
         component: './Index/Index',
       },
       {
