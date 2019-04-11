@@ -128,7 +128,7 @@ export async function getFakeCaptcha(mobile) {
 export async function apiLogin(params) {
   return request(`${API_ROOT}/auth/login`, {
     method: 'POST',
-    body: params,
+    data: params,
   });
 }
 
@@ -144,14 +144,14 @@ export async function adminUserSave(params) {
   }
   return request(apiUrl, {
     method: 'POST',
-    body: params,
+    data: params,
   });
 }
 
 export async function adminUsersDelete(params) {
   return request(`${API_ROOT}/admin_users`, {
     method: 'DELETE',
-    body: params,
+    data: params,
   });
 }
 
@@ -164,7 +164,7 @@ export async function adminGroupPermission(params) {
     `${API_ROOT}/admin_groups/${params.group_id}/permissions/${params.permission_id}`,
     {
       method: params.checked ? 'POST' : 'DELETE',
-      body: {},
+      data: {},
     }
   );
 }

@@ -12,13 +12,13 @@ export async function me() {
   // return request(`${API_ROOT}/auth/me`);
   return request(`${API_ROOT}/auth/me`, {
     method: 'POST',
-    body: {},
+    data: {},
   });
 }
 
 export async function updateMe(params) {
   return request(`${API_ROOT}/auth/me/update`, {
     method: 'POST',
-    body: params,
+    data: params,
   });
 }

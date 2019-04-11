@@ -1,4 +1,3 @@
-
 /**
  * request 网络请求工具
  * 更详细的api文档: https://bigfish.alipay.com/doc/api#request
@@ -36,21 +35,6 @@ const errorHandler = error => {
   const { response = {} } = error;
   const errortext = codeMessage[response.status] || response.statusText;
   const { status, url } = response;
-
-  if (status >= 200 && status < 300) {
-    response
-      .clone()
-      .json()
-      .then(data => {
-        if (data.error_message) {
-          message.error(data.error_message);
-        }
-        if (data.success_message) {
-          message.success(data.success_message);
-        }
-      });
-    return response;
-  }
 
   if (status === 401) {
     if (window.location.pathname !== '/user/login') {
@@ -107,14 +91,53 @@ const errorHandler = error => {
 /**
  * 配置request请求时的默认参数
  */
-const accessToken = getAccessToken();
 const request = extend({
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
-    'Authorization': `Bearer ${accessToken}`,
   },
+});
+// request interceptor, change url or options.
+request.interceptors.request.use((url, options) => {
+  const accessToken = getAccessToken();
+  console.log({
+    accessToken,
+    options,
+  });
+  const newOptions = options;
+  newOptions.headers = {
+    ...newOptions.headers,
+    Authorization: `Bearer ${accessToken}`,
+  };
+  return {
+    url: `${url}`,
+    options: {
+      ...newOptions,
+      interceptors: true,
+    },
+  };
+});
+
+// response interceptor, handling response
+request.interceptors.response.use((response, options) => {
+  response
+    .clone()
+    .json()
+    .then(data => {
+      if (data.error_message) {
+        message.error(data.error_message);
+      }
+      if (data.success_message) {
+        message.success(data.success_message);
+      }
+    });
+  // response.headers.append('interceptors', 'yes yo');
+  console.log('response interceptors', {
+    response,
+    options,
+  });
+  return response;
 });
 
 export default request;
