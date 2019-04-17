@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { formatMessage } from 'umi-plugin-react/locale';
-import { Layout, message } from 'antd';
+import { Layout, message, notification } from 'antd';
 import Animate from 'rc-animate';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -26,6 +26,46 @@ class HeaderView extends Component {
 
   componentDidMount() {
     document.addEventListener('scroll', this.handScroll, { passive: true });
+
+    const { pusherChannelPublic } = this.props;
+    if (pusherChannelPublic) {
+      // Pusher 消息提醒
+      pusherChannelPublic.bind('notice', data => {
+        notification.destroy();
+        notification.config({
+          placement: 'topRight',
+          top: 50,
+          duration: 5,
+        });
+        notification.open({
+          message: data.title || '提醒',
+          description: data.message,
+          onClick: () => {
+            console.log('Notification Clicked!', `pusher-${PUSHER_CHANNEL}-notice`, data);
+          },
+        });
+      });
+      // Pusher 公告提醒
+      pusherChannelPublic.bind('App\\Events\\AnnouncementPublished', data => {
+        notification.destroy();
+        notification.config({
+          placement: 'topLeft',
+          top: 50,
+          duration: null,
+        });
+        notification.info({
+          message: `公告：${data.announcement.title}`,
+          description: data.announcement.content,
+          onClick: () => {
+            console.log(
+              'AnnouncementPublished!',
+              `pusher-${PUSHER_CHANNEL}-AnnouncementPublished`,
+              data
+            );
+          },
+        });
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -164,4 +204,5 @@ export default connect(({ user, global, setting, loading }) => ({
   fetchingNotices: loading.effects['global/fetchNotices'],
   notices: global.notices,
   setting,
+  pusher: global.pusher,
 }))(HeaderView);

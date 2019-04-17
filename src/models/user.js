@@ -9,6 +9,7 @@ export default {
   state: {
     list: [],
     currentUser: {},
+    currentPusherChannel: null,
   },
 
   effects: {
@@ -37,6 +38,16 @@ export default {
           type: 'menu/save',
           payload: {
             menuData: response.menuData,
+          },
+        });
+      }
+
+      if (response.pusherChannelName) {
+        // Pusher 订阅当前管理员频道
+        yield put({
+          type: 'global/pusherChannelCurrentSubscribe',
+          payload: {
+            channelName: response.pusherChannelName,
           },
         });
       }
@@ -82,6 +93,12 @@ export default {
           notifyCount: action.payload.totalCount,
           unreadCount: action.payload.unreadCount,
         },
+      };
+    },
+    saveCurrentPusherChannel(state, action) {
+      return {
+        ...state,
+        currentPusherChannel: action.payload,
       };
     },
   },

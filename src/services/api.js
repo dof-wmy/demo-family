@@ -125,6 +125,10 @@ export async function getFakeCaptcha(mobile) {
   return request(`/api/captcha?mobile=${mobile}`);
 }
 
+export async function apiConfig() {
+  return request(`${API_ROOT}/config`);
+}
+
 export async function apiLogin(params) {
   return request(`${API_ROOT}/auth/login`, {
     method: 'POST',

@@ -11,15 +11,29 @@ import styles from './Login.less';
 
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 
-@connect(({ login, loading }) => ({
+@connect(({ login, loading, global }) => ({
   login,
   submitting: loading.effects['login/login'],
+  socialite: global.config.socialite,
+  pusher: global.pusher,
 }))
 class LoginPage extends Component {
   state = {
     type: 'account',
     autoLogin: true,
+    pusherSocialiteLoginChannel: null,
+    loading: false,
   };
+
+  componentDidMount() {
+    const { pusher, dispatch } = this.props;
+    if (pusher === null) {
+      dispatch({
+        type: 'global/pusherInit',
+        payload: {},
+      });
+    }
+  }
 
   onTabChange = type => {
     this.setState({ type });
@@ -67,9 +81,52 @@ class LoginPage extends Component {
     <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />
   );
 
+  listenSocialiteLogin = socialiteItem => {
+    const { pusher, dispatch } = this.props;
+    let { pusherSocialiteLoginChannel } = this.state;
+    console.log('listenSocialiteLogin', socialiteItem, pusher);
+    if (pusher !== null) {
+      pusherSocialiteLoginChannel = pusher.subscribe(socialiteItem.pusherChannelName);
+      this.setState({
+        pusherSocialiteLoginChannel,
+        loading: true,
+      });
+      pusherSocialiteLoginChannel.bind('App\\Events\\SocialiteLoginSuccess', data => {
+        console.log(
+          'pusherChannelCurrent App\\Events\\SocialiteLoginSuccess',
+          // pusherChannelCurrent,
+          data
+        );
+        const { code, users } = data;
+        const [user] = users;
+        const usersCount = users.length;
+        if (usersCount === 0) {
+          message.error('该账户尚未绑定到管理员账户');
+        } else {
+          // TODO 让用户选择登录哪个账户
+          // users
+        }
+        if (code && user) {
+          dispatch({
+            type: 'login/login',
+            payload: {
+              code,
+              user,
+              type: 'socialite',
+            },
+          });
+        }
+
+        this.setState({
+          loading: false,
+        });
+      });
+    }
+  };
+
   render() {
-    const { login, submitting } = this.props;
-    const { type, autoLogin } = this.state;
+    const { login, submitting, socialite } = this.props;
+    const { type, autoLogin, loading } = this.state;
     return (
       <div className={styles.main}>
         <Login
@@ -84,6 +141,7 @@ class LoginPage extends Component {
             {login.status === 'error' &&
               login.type === 'account' &&
               !submitting &&
+              !loading &&
               this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))}
             <UserName
               name="username"
@@ -158,16 +216,38 @@ class LoginPage extends Component {
               </a>
             )}
           </div>
-          <Submit loading={submitting}>
+          <Submit loading={submitting || loading}>
             <FormattedMessage id="app.login.login" />
           </Submit>
           <div className={styles.other}>
             {defaultSettings.signInWith.enable && (
               <div>
                 <FormattedMessage id="app.login.sign-in-with" />
-                <Icon type="alipay-circle" className={styles.icon} theme="outlined" />
+                {socialite && socialite.length === 0 && (
+                  <Icon type="loading" className={styles.icon} />
+                )}
+                {socialite &&
+                  socialite.map(socialiteItem => {
+                    return (
+                      <a
+                        key={socialiteItem.driver}
+                        href={socialiteItem.oauthUrl}
+                        onClick={() => this.listenSocialiteLogin(socialiteItem)}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <Icon
+                          type={socialiteItem.icon}
+                          className={styles.icon}
+                          theme="outlined"
+                          title={socialiteItem.name}
+                        />
+                      </a>
+                    );
+                  })}
+                {/* <Icon type="alipay-circle" className={styles.icon} theme="outlined" />
                 <Icon type="taobao-circle" className={styles.icon} theme="outlined" />
-                <Icon type="weibo-circle" className={styles.icon} theme="outlined" />
+                <Icon type="weibo-circle" className={styles.icon} theme="outlined" /> */}
               </div>
             )}
             {defaultSettings.signup.enable && (

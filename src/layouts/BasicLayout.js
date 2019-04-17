@@ -1,6 +1,5 @@
 import React, { Suspense } from 'react';
-import Pusher from 'pusher-js';
-import { Layout, notification } from 'antd';
+import { Layout } from 'antd';
 import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
 import { ContainerQuery } from 'react-container-query';
@@ -47,9 +46,18 @@ const query = {
 class BasicLayout extends React.Component {
   componentDidMount() {
     const {
+      pusher,
       dispatch,
       route: { routes, path, authority },
     } = this.props;
+
+    if (pusher === null) {
+      dispatch({
+        type: 'global/pusherInit',
+        payload: {},
+      });
+    }
+
     dispatch({
       type: 'user/fetchCurrent',
     });
@@ -60,50 +68,6 @@ class BasicLayout extends React.Component {
       type: 'menu/getMenuData',
       payload: { routes, path, authority },
     });
-
-    if (PUSHER_APP_KEY && PUSHER_CHANNEL) {
-      Pusher.logToConsole = PUSHER_LOG_TO_CONSOLE;
-      const pusher = new Pusher(PUSHER_APP_KEY, {
-        cluster: PUSHER_APP_CLUSTER,
-        forceTLS: true,
-      });
-      const channel = pusher.subscribe(PUSHER_CHANNEL);
-      channel.bind('notice', data => {
-        notification.destroy();
-        notification.config({
-          placement: 'topRight',
-          top: 50,
-          duration: 5,
-        });
-        notification.open({
-          message: data.title || '提醒',
-          description: data.message,
-          onClick: () => {
-            console.log('Notification Clicked!', `pusher-${PUSHER_CHANNEL}-notice`, data);
-          },
-        });
-      });
-
-      channel.bind('App\\Events\\AnnouncementPublished', data => {
-        notification.destroy();
-        notification.config({
-          placement: 'topLeft',
-          top: 50,
-          duration: null,
-        });
-        notification.info({
-          message: `公告：${data.announcement.title}`,
-          description: data.announcement.content,
-          onClick: () => {
-            console.log(
-              'AnnouncementPublished!',
-              `pusher-${PUSHER_CHANNEL}-AnnouncementPublished`,
-              data
-            );
-          },
-        });
-      });
-    }
   }
 
   getContext() {
@@ -205,6 +169,7 @@ class BasicLayout extends React.Component {
 }
 
 export default connect(({ global, setting, menu: menuModel }) => ({
+  pusher: global.pusher,
   collapsed: global.collapsed,
   layout: setting.layout,
   menuData: menuModel.menuData,

@@ -40,11 +40,22 @@ class UserLayout extends Component {
     const {
       dispatch,
       route: { routes, authority },
+      pusher,
     } = this.props;
     dispatch({
       type: 'menu/getMenuData',
       payload: { routes, authority },
     });
+    dispatch({
+      type: 'global/getConfig',
+      payload: {},
+    });
+    if (pusher === null) {
+      dispatch({
+        type: 'global/pusherInit',
+        payload: {},
+      });
+    }
   }
 
   render() {
@@ -76,7 +87,8 @@ class UserLayout extends Component {
   }
 }
 
-export default connect(({ menu: menuModel }) => ({
+export default connect(({ menu: menuModel }, global) => ({
   menuData: menuModel.menuData,
   breadcrumbNameMap: menuModel.breadcrumbNameMap,
+  pusher: global.pusher,
 }))(UserLayout);

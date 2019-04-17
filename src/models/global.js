@@ -1,4 +1,6 @@
-import { queryNotices } from '@/services/api';
+import { queryNotices, apiConfig } from '@/services/api';
+
+import Pusher from 'pusher-js';
 
 export default {
   namespace: 'global',
@@ -6,6 +8,12 @@ export default {
   state: {
     collapsed: false,
     notices: [],
+    pusher: null,
+    pusherChannelPublic: null,
+    pusherChannelCurrent: null,
+    config: {
+      socialite: [],
+    },
   },
 
   effects: {
@@ -65,6 +73,52 @@ export default {
         },
       });
     },
+    *pusherInit({ payload }, { put }) {
+      console.log('pusher Init', payload);
+      Pusher.logToConsole = PUSHER_LOG_TO_CONSOLE;
+      if (PUSHER_APP_KEY && PUSHER_APP_CLUSTER) {
+        const pusher = new Pusher(PUSHER_APP_KEY, {
+          cluster: PUSHER_APP_CLUSTER,
+          forceTLS: true,
+          // TODO pusher 权限验证
+          // authEndpoint: '/pusher_auth.php',
+          // auth: {
+          //   headers: {
+          //     'X-CSRF-Token': "SOME_CSRF_TOKEN"
+          //   }
+          // }
+        });
+        yield put({
+          type: 'savePusher',
+          payload: pusher,
+        });
+        if (PUSHER_CHANNEL) {
+          yield put({
+            type: 'savePusherChannelPublic',
+            payload: pusher.subscribe(PUSHER_CHANNEL),
+          });
+        }
+      }
+    },
+    *pusherChannelCurrentSubscribe({ payload }, { put }) {
+      yield put({
+        type: 'savePusherChannelCurrent',
+        payload: payload.channelName,
+      });
+    },
+    *getConfig({ payload }, { call, put }) {
+      console.log('global getConfig', payload);
+      const data = yield call(apiConfig);
+      yield put({
+        type: 'saveConfig',
+        payload: data,
+      });
+      //   console.log('getConfig');
+      //   // yield put({
+      //   //   type: 'savePusherChannelCurrent',
+      //   //   payload: payload.channelName,
+      //   // });
+    },
   },
 
   reducers: {
@@ -84,6 +138,30 @@ export default {
       return {
         ...state,
         notices: state.notices.filter(item => item.type !== payload),
+      };
+    },
+    saveConfig(state, { payload }) {
+      return {
+        ...state,
+        config: payload,
+      };
+    },
+    savePusher(state, { payload }) {
+      return {
+        ...state,
+        pusher: payload,
+      };
+    },
+    savePusherChannelPublic(state, { payload }) {
+      return {
+        ...state,
+        pusherChannelPublic: payload,
+      };
+    },
+    savePusherChannelCurrent(state, { payload }) {
+      return {
+        ...state,
+        pusherChannelCurrent: state.pusher ? state.pusher.subscribe(payload) : null,
       };
     },
   },

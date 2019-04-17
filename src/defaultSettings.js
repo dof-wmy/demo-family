@@ -15,7 +15,7 @@ module.exports = {
     enable: false,
   },
   signInWith: {
-    enable: false,
+    enable: true,
   },
   copyright: '2019 WMY',
   headerSearch: {
