@@ -164,7 +164,7 @@ class Groups extends Component {
         // title="管理组权限分配"
         title={loading && groups.length === 0 && <Icon type="loading" />}
       >
-        <Tabs tabPosition="top" style={{ height: 300 }}>
+        <Tabs tabPosition="top" style={{ minHeight: 300 }}>
           {groups.map((group, groupIndex) => {
             return (
               <TabPane tab={group.text} key={group.id}>
