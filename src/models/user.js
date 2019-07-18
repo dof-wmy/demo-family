@@ -33,14 +33,14 @@ export default {
       });
 
       // 更新菜单
-      if (response.menuData) {
-        yield put({
-          type: 'menu/save',
-          payload: {
-            menuData: response.menuData,
-          },
-        });
-      }
+      // if (response.menuData) {
+      //   yield put({
+      //     type: 'menu/save',
+      //     payload: {
+      //       menuData: response.menuData,
+      //     },
+      //   });
+      // }
 
       if (response.pusherChannelName) {
         // Pusher 订阅当前管理员频道

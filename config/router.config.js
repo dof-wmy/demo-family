@@ -332,7 +332,7 @@ export default [
         path: '/admin',
         name: 'admin',
         icon: 'tool',
-        hideInMenu: true,
+        hideInMenu: false,
         routes: [
           {
             path: '/admin/user',
