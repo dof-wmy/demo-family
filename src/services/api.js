@@ -154,8 +154,11 @@ export async function adminUserSave(params) {
 
 export async function adminUsersDelete(params) {
   return request(`${API_ROOT}/admin_users`, {
-    method: 'DELETE',
-    data: params,
+    method: 'POST',
+    data: {
+      ...params,
+      _method: 'delete',
+    },
   });
 }
 
@@ -167,8 +170,40 @@ export async function adminGroupPermission(params) {
   return request(
     `${API_ROOT}/admin_groups/${params.group_id}/permissions/${params.permission_id}`,
     {
-      method: params.checked ? 'POST' : 'DELETE',
+      _method: params.checked ? 'POST' : 'DELETE',
       data: {},
     }
   );
+}
+
+export async function familyMembers(params) {
+  return request(`${API_ROOT}/family_members?${stringify(params)}`);
+}
+
+export async function familyMemberSave(params) {
+  let apiUrl = `${API_ROOT}/family_members`;
+  if (params.id) {
+    apiUrl += `/${params.id}`;
+  }
+  return request(apiUrl, {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function familyMemberDelete(params) {
+  return request(`${API_ROOT}/family_members`, {
+    method: 'POST',
+    data: {
+      ...params,
+      _method: 'delete',
+    },
+  });
+}
+
+export async function getMembersRelation(params) {
+  return request(`${API_ROOT}/family_members_relation`, {
+    method: 'POST',
+    data: params,
+  });
 }

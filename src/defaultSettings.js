@@ -1,6 +1,6 @@
 module.exports = {
-  appName: '后台管理系统',
-  appShortName: '后台',
+  appName: '家谱管理系统',
+  appShortName: '家谱',
   description: 'Good good study, day day up !',
   selectLang: {
     enable: false,
@@ -37,7 +37,7 @@ module.exports = {
   menu: {
     disableLocal: false,
   },
-  title: '后台管理系统',
+  title: '家谱管理系统',
   pwa: true,
   // Your custom iconfont Symbol script Url
   // eg：//at.alicdn.com/t/font_1039637_btcrd5co4w.js

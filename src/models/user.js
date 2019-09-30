@@ -33,14 +33,14 @@ export default {
       });
 
       // 更新菜单
-      // if (response.menuData) {
-      //   yield put({
-      //     type: 'menu/save',
-      //     payload: {
-      //       menuData: response.menuData,
-      //     },
-      //   });
-      // }
+      if (response.menuData) {
+        yield put({
+          type: 'menu/save',
+          payload: {
+            menuData: response.menuData,
+          },
+        });
+      }
 
       if (response.pusherChannelName) {
         // Pusher 订阅当前管理员频道
@@ -78,7 +78,7 @@ export default {
       };
     },
     updateAuthority(state, action) {
-      const authority = action.payload.roles || [];
+      const authority = action.payload && action.payload.roles ? action.payload.roles : [];
       authority.push('admin');
       setAuthority(authority);
       return {

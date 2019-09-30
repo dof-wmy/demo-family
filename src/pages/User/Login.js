@@ -219,43 +219,6 @@ class LoginPage extends Component {
           <Submit loading={submitting || loading}>
             <FormattedMessage id="app.login.login" />
           </Submit>
-          <div className={styles.other}>
-            {defaultSettings.signInWith.enable && (
-              <div>
-                <FormattedMessage id="app.login.sign-in-with" />
-                {socialite && socialite.length === 0 && (
-                  <Icon type="loading" className={styles.icon} />
-                )}
-                {socialite &&
-                  socialite.map(socialiteItem => {
-                    return (
-                      <a
-                        key={socialiteItem.driver}
-                        href={socialiteItem.oauthUrl}
-                        onClick={() => this.listenSocialiteLogin(socialiteItem)}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                      >
-                        <Icon
-                          type={socialiteItem.icon}
-                          className={styles.icon}
-                          theme="outlined"
-                          title={socialiteItem.name}
-                        />
-                      </a>
-                    );
-                  })}
-                {/* <Icon type="alipay-circle" className={styles.icon} theme="outlined" />
-                <Icon type="taobao-circle" className={styles.icon} theme="outlined" />
-                <Icon type="weibo-circle" className={styles.icon} theme="outlined" /> */}
-              </div>
-            )}
-            {defaultSettings.signup.enable && (
-              <Link className={styles.register} to="/user/register">
-                <FormattedMessage id="app.login.signup" />
-              </Link>
-            )}
-          </div>
         </Login>
       </div>
     );

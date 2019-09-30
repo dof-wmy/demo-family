@@ -74,7 +74,7 @@ export default {
       });
     },
     *pusherInit({ payload }, { put }) {
-      console.log('pusher Init', payload);
+      // console.log('pusher Init', payload);
       Pusher.logToConsole = PUSHER_LOG_TO_CONSOLE;
       if (PUSHER_APP_KEY && PUSHER_APP_CLUSTER) {
         const pusher = new Pusher(PUSHER_APP_KEY, {

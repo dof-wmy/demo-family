@@ -332,7 +332,7 @@ export default [
         path: '/admin',
         name: 'admin',
         icon: 'tool',
-        hideInMenu: false,
+        hideInMenu: true,
         routes: [
           {
             path: '/admin/user',
@@ -345,6 +345,21 @@ export default [
             name: 'group',
             icon: 'team',
             component: './Admin/Group/Groups',
+          },
+        ],
+      },
+
+      {
+        path: '/family',
+        name: 'family',
+        icon: 'user',
+        hideInMenu: true,
+        routes: [
+          {
+            path: '/family/members',
+            name: 'user',
+            icon: 'user',
+            component: './Family/Members',
           },
         ],
       },

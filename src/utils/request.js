@@ -106,11 +106,23 @@ request.interceptors.request.use((url, options) => {
     ...newOptions.headers,
     Authorization: `Bearer ${accessToken}`,
   };
+
+  if (options.method === 'post') {
+    newOptions.data = Object.keys(newOptions.data)
+      .filter(key => {
+        return newOptions.data[key] !== null;
+      })
+      .reduce((obj, key) => {
+        const newObj = obj;
+        newObj[key] = newOptions.data[key];
+        return newObj;
+      }, {});
+  }
   return {
     url: `${url}`,
     options: {
       ...newOptions,
-      interceptors: true,
+      // interceptors: true,
     },
   };
 });
@@ -125,14 +137,14 @@ request.interceptors.response.use((response, options) => {
         message.error(data.error_message);
       }
       if (data.success_message) {
-        message.success(data.success_message);
+        message.success(data.success_message, data.duration || 5);
       }
     });
   // response.headers.append('interceptors', 'yes yo');
-  console.log('response interceptors', {
-    response,
-    options,
-  });
+  // console.log('response interceptors', {
+  //   response,
+  //   options,
+  // });
   return response;
 });
 

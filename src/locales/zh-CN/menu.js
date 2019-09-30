@@ -48,4 +48,7 @@ export default {
   'menu.admin': '后台',
   'menu.admin.user': '管理员',
   'menu.admin.group': '管理组',
+
+  'menu.family': '家谱',
+  'menu.family.user': '成员',
 };

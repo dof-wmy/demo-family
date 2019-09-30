@@ -17,7 +17,7 @@ class Setting extends Component {
     const menuMap = {
       base: '基本信息',
       password: '密码修改',
-      socialiteUsers: '关联第三方账户',
+      // socialiteUsers: '关联第三方账户',
     };
     const key = location.pathname.replace(`${match.path}/`, '');
     this.state = {
