@@ -10,4 +10,4 @@
 
 2. 运行命令
 
-    > `npm build`
+    > `npm run build`
